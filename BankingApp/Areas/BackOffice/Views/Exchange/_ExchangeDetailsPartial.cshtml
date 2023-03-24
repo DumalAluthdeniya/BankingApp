@@ -1,0 +1,156 @@
+﻿@model ManageExchangesViewModel
+
+<div class="row">
+	<div class="col-lg-12">
+		<p class="fs-5 fw-800">Your base currency is USD ($)</p>
+		<div class="col-lg-12 my-4 p-4 bg__secondary">
+			<input type="hidden" asp-for="Exchange.Id" />
+			<div class="row">
+				<div class="d-flex flex-column col-4 fs-4">
+					<label> Market Rate </label>
+					<input id="marketRate" value="@Model.Exchange.MarketRate" class="text__input mt-1 p-2" placeholder="">
+				</div>
+
+				<div class="d-flex flex-column col-4 fs-4">
+					<label> Selling Rate </label>
+					<input id="sellingRate" value="@Model.Exchange.SellingRate" class="text__input mt-1 p-2" placeholder="">
+				</div>
+				<div class="d-flex flex-column col-4 fs-4">
+					<label> Buying Rate </label>
+					<input id="buyingRate" value="@Model.Exchange.BuyingRate" class="text__input mt-1 p-2" placeholder="">
+				</div>
+
+				<div class="d-flex flex-column col-4 fs-4">
+					<label> Set Spread % </label>
+					<input id="spread" value="@Model.Exchange.Spread" class="text__input mt-1 p-2" readonly>
+				</div>
+				<div class="col-lg-12 mt-2 text-end">
+					<button id="btnExchangeUpdate" type="button"
+							class="btn_solid col-4 fs-4 bg_primary_hover text-white">
+						Update
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="mt-4">
+			<p class="s-3 fs-4 fw-600">History</p>
+			<div class="d-flex justify-content-between align-items-center">
+				<p class="m-0">Rate</p>
+				<select class="nav-item" name="" id="" style="width:100px;margin: 0;"
+						class="col-lg-2 form-select form-control text__input">
+					<option value="spread">spread</option>
+				</select>
+			</div>
+			<div id="chart"></div>
+		</div>
+	</div>
+	@*<div class="col-lg-6">
+	<p>
+	Currency name is Euro(€) <span class="text-primary text-decoration-underline">
+	Change
+	Currency Name or Symbol
+	</span>
+	</p>
+	<table id="tblHistory" class="table">
+	<thead class="thead-dark">
+	<tr class="bg_primary text-white">
+	<th scope="col" style="padding:1rem;">Date</th>
+	<th scope="col" style="padding:1rem;">
+	Market Rate
+	</th>
+	<th scope="col" style="padding:1rem;">Selling Rate</th>
+	<th scope="col" style="padding:1rem;">Buying Rate</th>
+	<th scope="col" style="padding:1rem;">%Spread</th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var e in Model.Exchanges.OrderByDescending(e => e.LastUpdatedDate))
+	{
+	<tr class="border-1">
+	<th style="padding:1rem;">
+	@e.LastUpdatedDate
+	</th>
+	<td style="padding:1rem;">@e.MarketRate</td>
+	<td style="padding:1rem;">@e.SellingRate</td>
+	<td style="padding:1rem;">@e.BuyingRate</td>
+	<td style="padding:1rem;">@e.Spread%</td>
+	</tr>
+	}
+
+	</tbody>
+	</table>
+	</div>*@
+</div>
+<script>
+
+	$("#sellingRate").keyup(function () {
+		var sRate = $("#sellingRate").val();
+		var bRate = $("#buyingRate").val();
+		$("#spread").val((+sRate - +bRate).toFixed(2));
+	});
+
+	$("#buyingRate").keyup(function () {
+		var sRate = $("#sellingRate").val();
+		var bRate = $("#buyingRate").val();
+		$("#spread").val((+sRate - +bRate).toFixed(2));
+	});
+
+	$("#btnExchangeUpdate").click(function () {
+		var exhangeId = $("#Exchange_Id").val();
+		var marketRate = $("#marketRate").val();
+		var sRate = $("#sellingRate").val();
+		var bRate = $("#buyingRate").val();
+		var spread = $("#spread").val();
+		var date = new Date().toLocaleString();
+	//	var row = '<tr class="border-1"><th>' + date + '</th><td style="padding: 1rem;">' + marketRate + '</td><td style="padding: 1rem;">' + rate + '%</td><td style="padding: 1rem;">' + spread + '</td></tr>';
+		$.ajax({
+			type: "POST",
+			async: true,
+			url: '/BackOffice/Exchange/UpdateExchnageDetails',
+			data: { "exhangeId": exhangeId, "marketRate": marketRate, "sRate": sRate, "bRate": bRate, "spread": spread },
+			success: function (response) {
+				if (response) {
+					//$("#tblHistory > tbody").append(row);
+					alert("Successfully Updated");
+				}
+			},
+			error: function (error) {
+				alert('Error occured. Please try again later.');
+			}
+		})
+	})
+	var options = {
+		series: [{
+			name: "",
+			data: [0.2, 0.4, 0.0, 0.4, 0.6, 0.4, 0.8, 0.6, 0.7, 0.4, 0.2, 0.6]
+		}],
+		chart: {
+			height: 350,
+			type: 'line',
+			zoom: {
+				enabled: false
+			},
+			toolbar: {
+				show: false
+			},
+		},
+		dataLabels: {
+			enabled: false
+		},
+		stroke: {
+			width: 2,
+			curve: 'smooth'
+		},
+		grid: {
+			borderColor: '#8C89B480',
+			strokeDashArray: 3
+		},
+		xaxis: {
+			categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+		}
+	};
+
+	var chart = new ApexCharts(document.querySelector("#chart"), options);
+	chart.render();
+</script>

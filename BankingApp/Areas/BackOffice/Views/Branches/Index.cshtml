@@ -1,0 +1,179 @@
+﻿@using BankingApp.Areas.BackOffice;
+@using BankingApp.Data;
+@model ManageBranchesViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+
+@{
+	ViewData["Title"] = "Manage Branches";
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
+<main class="col-lg-10 offset-lg-2">
+	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold" style="font-size: 22px;">Manage Branches</h4>
+		</div>
+		<div>
+			@await Html.PartialAsync("_CulturePartial")
+		</div>
+	</nav>
+
+	<div class="py-4" x-data="{active_tab : @Model.ActiveTab}">
+		<div class="px-4">
+			<ul class="d-flex align-items-center gap-4 nav__tabs__container">
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">List of Branches</li>
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 2 }" :style="active_tab!=2 ? 'color:#BEBEBE':'' ">Branch Details</li>
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">Add new Branch</li>
+			</ul>
+
+			<div class="py-4" x-show="active_tab == 1">
+				<table class="table">
+					<thead class="thead-dark">
+						<tr class="bg_primary text-white border">
+							<th scope="col" style="padding:1rem;">Name</th>
+							<th scope="col" style="padding:1rem;">Phone Number</th>
+							<th scope="col" style="padding:1rem;">Manager</th>
+							<th scope="col" style="padding:1rem;">Status</th>
+							@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
+							{
+								<th scope="col" style="padding:1rem;">Manage</th>
+							}
+						</tr>
+					</thead>
+					<tbody>
+						@if (Model.Branches != null && Model.Branches.Any())
+						{
+							@foreach (var b in Model.Branches)
+							{
+								<tr class="border">
+									<th style="padding:1rem;">@b.Name</th>
+									<td style="padding:1rem;">@b.Phone</td>
+									<td style="padding:1rem;">@(b.Manager != null ? @b.Manager.FirstName : "Not Assigned")</td>
+									<td style="padding:1rem;">@(b.IsActive ? "Active" : "Deactive")</td>
+									@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
+									{
+										<td @@click="active_tab = 2" style="padding:1rem;">
+											<a data-bId="@b.Id" style="border-radius: 4px;" class="bg_primary text-white nav-item text-center p-2 manageBranch">Manage</a>
+										</td>
+									}
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+
+			<div class="py-4" x-show="active_tab == 3">
+				<div class="col-lg-8 mx-auto py-4">
+					<div asp-validation-summary="All" class="text-danger"></div>
+
+					<form asp-action="AddUpdateBranch" asp-controller="Branches" asp-area="BackOffice" method="post">
+						<input type="hidden" asp-for="Branch.Id" />
+						<div class="row">
+							<div class="d-flex flex-column col-6 fs-4">
+								<label for="first_name">Name</label>
+								<input asp-for="Branch.Name" class="text__input mt-1" placeholder="">
+								<span asp-validation-for="Branch.Name" class="text-danger"></span>
+
+							</div>
+							<div class="d-flex flex-column col-6 fs-4">
+								<label for="first_name">Manager</label>
+								<select class="text__input mt-1" asp-for="SelectedManager" asp-items="@Model.Managers" class="form-select">
+								</select>
+							</div>
+
+							<div class="d-flex flex-column col-6 fs-4 mt-4">
+								<label for="first_name">Email</label>
+								<input type="email" asp-for="Branch.Email" class="text__input mt-1" placeholder="">
+								<span asp-validation-for="Branch.Email" class="text-danger"></span>
+
+							</div>
+							<div class="d-flex flex-column col-6 fs-4 mt-4">
+								<label for="first_name">Phone number</label>
+								<input asp-for="Branch.Phone" class="text__input mt-1" placeholder="">
+								<span asp-validation-for="Branch.Phone" class="text-danger"></span>
+
+							</div>
+
+							<div class="d-flex flex-column col-12 fs-4 mt-4">
+								<label for="first_name">Address</label>
+								<input asp-for="Branch.AddressLine1" class="text__input mt-1" placeholder="Street Address">
+								<span asp-validation-for="Branch.AddressLine1" class="text-danger"></span>
+
+							</div>
+
+							<div class="d-flex flex-column col-12 fs-4">
+								<input asp-for="Branch.AddressLine2" class="text__input" placeholder="Street Address Line 2">
+								<span asp-validation-for="Branch.AddressLine2" class="text-danger"></span>
+							</div>
+
+							<div class="d-flex flex-column col-6 fs-4">
+								<input asp-for="Branch.City" class="text__input" placeholder="City">
+								<span asp-validation-for="Branch.City" class="text-danger"></span>
+							</div>
+
+							<div class="d-flex flex-column col-6 fs-4">
+								<input asp-for="Branch.Region" class="text__input" placeholder="Region">
+								<span asp-validation-for="Branch.Region" class="text-danger"></span>
+							</div>
+
+							<div class="d-flex flex-column col-6 fs-4">
+								<input asp-for="Branch.Country" class="text__input" placeholder="Country">
+								<span asp-validation-for="Branch.Country" class="text-danger"></span>
+							</div>
+							<div class="d-flex align-items-center col-6 fs-4">
+								<label class="form-check-label" style="margin-right: 1rem;" for="flexCheckDefault">
+									Active
+								</label>
+								<input class="form-check-input" type="checkbox" asp-for="Branch.IsActive" />
+							</div>
+							<div class="mt-5 text-end">
+								<button type="submit" class="btn_outline fs-5 fw-600"
+										style="margin-right: 1rem;">
+									Cancel
+								</button>
+								<button type="submit"
+										class="btn_solid fs-5 fw-600 bg_primary_hover text-white">
+									Add
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div id="branchDetails" class="py-4" x-show="active_tab == 2"></div>
+
+		</div>
+	</div>
+</main>
+
+@section Scripts{
+	<script>
+		$(".manageBranch").click(function () {
+			var bId = $(this).attr("data-bId");
+			LoadBranchDetails(bId);
+		})
+
+		function LoadBranchDetails(bId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Branches/LoadBranchDetails',
+				data: { "branchId": bId },
+				success: function (data) {
+					$('#branchDetails').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+	</script>
+}
+

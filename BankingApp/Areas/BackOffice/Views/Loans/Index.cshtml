@@ -1,0 +1,160 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model ManageLoansViewModel
+@{
+	ViewData["Title"] = "Manage Exchnage";
+}
+<main class="col-lg-10 offset-lg-2">
+	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold" style="font-size: 22px;">Manage Loan</h4>
+		</div>
+
+		<div class="d-flex align-items-center">
+			<input type="text" placeholder="Search by Account number" class="search_input me-2">
+			<a class="btn_small nav-item">
+				<img src="../assets/svg/search.svg" alt="" srcset="">
+			</a>
+			<a class="btn_small nav-item">
+				<img src="../assets/svg/filters.svg" alt="" srcset="">
+			</a>
+		</div>
+
+		<div>
+			@await Html.PartialAsync("_CulturePartial")
+		</div>
+	</nav>
+
+	<div class="py-4" x-data="{active_tab : @Model.ActiveTab}">
+		<div class="mx-4">
+			<ul class="d-flex align-items-center gap-4 nav__tabs__container">
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 1 }"
+					@@click="active_tab = 1">Loan Requests</li>
+				<li class="p-3" :style="active_tab!=4 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 4 }">Loan Details</li>
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 2 }"
+					@@click="active_tab = 2">Loan Accounts</li>
+				<li class="p-3" :style="active_tab!=3 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 3 }">Open Loan</li>
+
+			</ul>
+
+			<div class="py-4" x-show="active_tab == 1">
+				<table class="table">
+					<thead class="thead-dark">
+						<tr class="bg_primary text-white">
+							<th scope="col" style="padding:1rem;">Name</th>
+							<th scope="col" style="padding:1rem;">Purpose of loan</th>
+							<th scope="col" style="padding:1rem;">Amount</th>
+							<th scope="col" style="padding:1rem;">Monthly payment</th>
+							<th scope="col" style="padding:1rem;">Date</th>
+							<th scope="col" style="padding:1rem;">Status</th>
+							<th scope="col" style="padding:1rem;">Manage</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var l in @Model.Loans.Where(l => l.LoanStatus == LoanStatus.RequestSent || l.LoanStatus == LoanStatus.Processing).ToList())
+						{
+							<tr class="border-1">
+								<th style="padding:1rem;">@l.Customer.FirstName @l.Customer.LastName</th>
+								<td style="padding:1rem;">@l.Purpose</td>
+								<td class="secondery__font" style="padding:1rem;">@l.Amount.ToString("C", CultureInfo.CurrentCulture)</td>
+								<td class="secondery__font" style="padding:1rem;">@l.MonthlyPayment.ToString("G", CultureInfo.CurrentCulture)</td>
+								<td style="padding:1rem;">@l.CreatedDate.ToString("g", CultureInfo.CurrentCulture)</td>
+								<td style="padding:1rem;">@l.LoanStatus</td>
+								<td style="padding:1rem;">
+									<a data-lId="@l.Id" @@click="active_tab = 4" style="border-radius: 4px;"
+								   class="bg_primary nav-item text-white text-center p-2 manageLoan">Manage</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+
+			<div class="py-4" x-show="active_tab == 2">
+				<table class="table">
+					<thead class="thead-dark">
+						<tr class="bg_primary text-white">
+							<th scope="col" style="padding:1rem;">Name</th>
+							<th scope="col" style="padding:1rem;">Purpose of loan</th>
+							<th scope="col" style="padding:1rem;">Amount</th>
+							<th scope="col" style="padding:1rem;">Monthly payment</th>
+							<th scope="col" style="padding:1rem;">Date</th>
+							<th scope="col" style="padding:1rem;">Manage</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var l in @Model.Loans.FindAll(l => l.LoanStatus == LoanStatus.Completed))
+						{
+							<tr class="border-1">
+								<th style="padding:1rem;">@l.Customer.FirstName @l.Customer.LastName</th>
+								<td style="padding:1rem;">@l.Purpose</td>
+								<td class="secondery__font" style="padding:1rem;">@l.Amount.ToString("C", CultureInfo.CurrentCulture)</td>
+								<td class="secondery__font" style="padding:1rem;">@l.MonthlyPayment.ToString("C", CultureInfo.CurrentCulture)</td>
+								<td style="padding:1rem;">@l.CreatedDate.ToString("g", CultureInfo.CurrentCulture)</td>
+								<td style="padding:1rem;">
+									<a data-lId="@l.Id" @@click="active_tab = 3" style="border-radius: 4px;"
+								   class="bg_primary nav-item text-white text-center p-2 manageOpenLoan">Manage</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+
+			<div class="py-4" x-show="active_tab == 3">
+				<div id="LoanOpenLoanDetails">
+				</div>
+			</div>
+
+			<div class="py-4" x-show="active_tab == 4">
+				<div id="LoanRequestDetails">
+				</div>
+			</div>
+
+		</div>
+	</div>
+</main>
+
+@section Scripts{
+	<script>
+		$(".manageLoan").click(function () {
+			var cId = $(this).attr("data-lId");
+			LoadLoanDetails(cId);
+		})
+
+		function LoadLoanDetails(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Loans/LoadLoanDetails',
+				data: { "loanId": cId },
+				success: function (data) {
+					$('#LoanRequestDetails').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+
+		$(".manageOpenLoan").click(function () {
+			var cId = $(this).attr("data-lId");
+			LoadOpenLoanDetails(cId);
+		})
+
+		function LoadOpenLoanDetails(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Loans/LoadOpenLoanDetails',
+				data: { "loanId": cId },
+				success: function (data) {
+					$('#LoanOpenLoanDetails').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+	</script>
+
+}

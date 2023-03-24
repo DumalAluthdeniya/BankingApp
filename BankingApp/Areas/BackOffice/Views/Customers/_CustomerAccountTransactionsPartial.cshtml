@@ -1,0 +1,97 @@
+﻿@model ManageCustomersViewModel
+
+
+
+<div><a id="btnViewAccounts" data-cId="@Model.Account.CustomerId" class="btn btn-secondary mb-2" @@click="active_tab = 4">View Accounts</a></div>
+
+<div class="row">
+	<div class="col-6">
+		<h4>Transactions for account no : @Model.Account.AccountNo</h4>
+
+		<table class="table">
+			<thead class="thead-dark">
+				<tr class="bg_primary text-white border">
+					<th scope="col" style="padding:1rem;">Type</th>
+					<th scope="col" style="padding:1rem;">Amount</th>
+					<th scope="col" style="padding:1rem;">Description/Ref</th>
+					<th scope="col" style="padding:1rem;">Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (Model.Transactions != null && Model.Transactions.Any())
+				{
+					@foreach (var a in Model.Transactions.OrderByDescending(o => o.CreatedDate))
+					{
+						<tr class="border">
+							<th style="padding:1rem;">@a.TransactionType</th>
+							<td style="padding:1rem;">@a.Amount.ToString("C", CultureInfo.CurrentCulture)</td>
+							<td style="padding:1rem;">@a.Description</td>
+							<td style="padding:1rem;">@a.CreatedDate.ToString("g", CultureInfo.CurrentCulture)</td>
+						</tr>
+					}
+
+				}
+			</tbody>
+		</table>
+	</div>
+	<div class="col-6">
+		<h4>Add Transaction</h4>
+		<form asp-action="AddUpdateTransaction" asp-controller="Customers" asp-area="BackOffice" method="post">
+			<input asp-for="Account.Id" type="hidden"/>
+			<div class="row py-4">
+				<div class="d-flex flex-column mt-2 col-5 fs-4">
+					<label for="customer_name">Transaction Type</label>
+					<select class="te    xt__input mt-1" asp-for="Transaction.TransactionType" asp-items="Html.GetEnumSelectList<TransactionType>()" class="form-select">
+					</select>
+				</div>
+				<div class="d-flex flex-column col-5 fs-4">
+					<label for="email">Amount</label>
+					<input asp-for="Transaction.Amount" class="text__input mt-1" placeholder="">
+					<span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+				</div>
+				<div class="d-flex flex-column mt-2 col-5 fs-4 mt-4">
+					<label for="phone_number">Description</label>
+					<input asp-for="Transaction.Description" class="text__input mt-1" placeholder="">
+					<span asp-validation-for="Transaction.Description" class="text-danger"></span>
+				</div>
+				<div class="d-flex flex-column mt-2 col-5 fs-4 mt-4">
+					<label for="phone_number">Reference </label>
+					<input asp-for="Transaction.Reference" class="text__input mt-1" placeholder="">
+					<span asp-validation-for="Transaction.Reference" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="mt-5 text-end">
+				<button type="button" class="btn_outline fs-5 fw-600"
+						style="margin-right: 1rem;">
+					Cancel
+				</button>
+				<button type="submit"
+						class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">
+					Add
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+
+	$("#btnViewAccounts").click(function () {
+		var aId = $(this).attr("data-cId");
+		LoadAccounts(aId);
+	})
+
+	function LoadAccounts(cId) {
+		$.ajax({
+			type: "GET",
+			async: true,
+			url: '/BackOffice/Customers/LoadAccounts',
+			data: { "customerId": cId },
+			success: function (data) {
+				$('#accounts').html(data);
+			},
+			error: function (error) {
+				alert('Error occured. Please try again later.');
+			}
+		});
+	}
+</script>

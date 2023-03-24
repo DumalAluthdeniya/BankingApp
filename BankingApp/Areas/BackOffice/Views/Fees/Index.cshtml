@@ -1,0 +1,163 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model IEnumerable<AccountFeeSetting>
+@{
+	ViewData["Title"] = "Manage Fees";
+}
+<main class="col-lg-10 offset-lg-2">
+	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold fs-3">Manage Fees</h4>
+		</div>
+		<div>
+			@await Html.PartialAsync("_CulturePartial")
+		</div>
+	</nav>
+
+	<div class="p-4">
+		<div class="container">
+			<div class="py-4">
+				<div class="row">
+					<div class="col-lg-5">
+						<div>
+							<p class="fw-700">Spending Accounts:</p>
+							<table class="table table-borderless">
+								<tbody>
+									<tr class="align-middle">
+										<td>Interest rate</td>
+										<td>
+											<input id="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_InterestRate")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_InterestRate")).Value" class="text__input m-0 w-100">
+										</td>
+										<td>
+											<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_InterestRate")).Id" class="update btn btn-info btn-xs">Update</button>
+										</td>
+									</tr>
+									<tr class="align-middle">
+										<td>TX fee debit</td>
+										<td>
+											<input id="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_TXFeeDebit")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_TXFeeDebit")).Value" class="text__input m-0 w-100">
+										</td>
+										<td>
+											<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_TXFeeDebit")).Id" class="update btn btn-info btn-xs">Update</button>
+										</td>
+									</tr>
+
+									<tr class="align-middle">
+										<td>TX fee credit</td>
+										<td>
+											<input id="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_TXFeeCredit")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_TXFeeCredit")).Value" class="text__input m-0 w-100">
+										</td>
+										<td>
+											<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Spending_Accounts_TXFeeCredit")).Id" class="update btn btn-info btn-xs">Update</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="mt-5">
+							<p class="fw-700">Saving Accounts:</p>
+							<table class="table table-borderless">
+								<tbody>
+									<tr class="align-middle">
+										<td>Interest rate</td>
+										<td>
+											<input id="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_InterestRate")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_InterestRate")).Value" class="text__input m-0 w-100">
+										</td>
+										<td>
+											<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_InterestRate")).Id" class="update btn btn-info btn-xs">Update</button>
+										</td>
+									</tr>
+									<tr class="align-middle">
+										<td>TX fee credit</td>
+										<td>
+											<input id="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_TXFeeDebit")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_TXFeeDebit")).Value" class="text__input m-0 w-100">
+										</td>
+										<td>
+											<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_TXFeeDebit")).Id" class="update btn btn-info btn-xs">Update</button>
+										</td>
+									</tr>
+
+									<tr class="align-middle">
+										<td>TX fee debit</td>
+										<td>
+											<input id="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_TXFeeCredit")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_TXFeeCredit")).Value" class="text__input m-0 w-100">
+										</td>
+										<td>
+											<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Savings_Accounts_TXFeeCredit")).Id" class="update btn btn-info btn-xs">Update</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="col-lg-6 offset-1">
+						<p class="fw-700">Loans:</p>
+						<table class="table table-borderless">
+							<tbody>
+								<tr class="align-middle">
+									<td>Base Interest rate</td>
+									<td>
+										<input id="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_InterestRate")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_InterestRate")).Value" class="text__input m-0 w-100">
+									</td>
+									<td>
+										<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_InterestRate")).Id" class="update btn btn-info btn-xs">Update</button>
+									</td>
+								</tr>
+								<tr class="align-middle">
+									<td>Late payment fee</td>
+									<td>
+										<input id="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_TXFeeDebit")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_TXFeeDebit")).Value" class="text__input m-0 w-100">
+									</td>
+									<td>
+										<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_TXFeeDebit")).Id" class="update btn btn-info btn-xs">Update</button>
+									</td>
+								</tr>
+
+								<tr class="align-middle">
+									<td>Terms range</td>
+									<td>
+										<input id="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_TXFeeCredit")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_TXFeeCredit")).Value" class="text__input m-0 w-100">
+									</td>
+									<td>
+										<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Loans_Accounts_TXFeeCredit")).Id" class="update btn btn-info btn-xs">Update</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+@*				<div class="mt-5 text-end">
+					<button type="submit" class="btn_outline fs-5 fw-600"
+							style="margin-right: 1rem;">
+						Cancel
+					</button>
+					<button type="submit" class="btn_solid fs-5 fw-600 bg_primary_hover text-white"
+							style="margin-right: 1rem;">
+						Confirm
+					</button>
+				</div>*@
+			</div>
+		</div>
+	</div>
+</main>
+@section Scripts{
+	<script>
+		$(".update").click(function () {
+			var id = $(this).attr("data-id");
+			var idText = '#' + id;
+			var value = $(idText).val();
+			$.ajax({
+				type: "POST",
+				async: true,
+				url: '/BackOffice/Fees/UpdateFeeValue',
+				data: { "id": id, "value": value },
+				success: function (data) {
+					location.reload();
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		});
+	</script>
+}

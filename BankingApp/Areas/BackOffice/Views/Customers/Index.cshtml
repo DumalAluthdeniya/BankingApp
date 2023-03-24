@@ -1,0 +1,262 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model ManageCustomersViewModel
+@{
+	ViewData["Title"] = "Manage Customers";
+}
+
+<input asp-for="@Model.ActiveTab" type="hidden" />
+<input asp-for="@Model.Account.Id" type="hidden" />
+<main class="col-10 col-lg-10 offset-lg-2 offset-0 ">
+	<nav class="d-flex justify-content-between align-items-center p-4 border__bottom">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold" style="font-size: 22px;">Customers</h4>
+		</div>
+
+		<div class="d-flex align-items-center">
+			<input type="text" placeholder="Search by Account number" class="search_input me-2">
+			<a class="btn_small nav-item">
+				<img src="../assets/svg/search.svg" alt="" srcset="">
+			</a>
+			<a class="btn_small nav-item">
+				<img src="../assets/svg/filters.svg" alt="" srcset="">
+			</a>
+		</div>
+
+		<div>
+			@await Html.PartialAsync("_CulturePartial")
+		</div>
+	</nav>
+	<div x-data="{active_tab : @Model.ActiveTab}" class="px-4">
+		<ul class="d-flex align-items-center gap-4 nav__tabs__container pt-4">
+			<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">List of Customers</li>
+			<li class="p-3" :style="active_tab!=2 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 2 }">Customer Details</li>
+			<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">Add new Customer</li>
+			<li class="p-3" :style="active_tab!=4 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 4 }">Customer Accounts</li>
+			<li class="p-3" :style="active_tab!=5 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 5 }">Account Details</li>
+			<li class="p-3" :style="active_tab!=6 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 6 }">Create Account</li>
+		</ul>
+
+		<div class="py-4">
+			<table class="table" x-show="active_tab == 1">
+				<thead class="thead-dark">
+					<tr class="bg_primary text-white border">
+						<th scope="col" style="padding:1rem;">Customer Name</th>
+						<th scope="col" style="padding:1rem;">Phone Number</th>
+						<th scope="col" style="padding:1rem;">Accounts</th>
+						<th scope="col" style="padding:1rem;">Account Balances</th>
+						<th scope="col" style="padding:1rem;">Loan Balances</th>
+						<th scope="col" style="padding:1rem;">Status</th>
+						<th scope="col" colspan="2" style="padding:1rem;">Manage</th>
+						<th scope="col" style="padding:1rem;"></th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (Model.Customers != null && Model.Customers.Any())
+					{
+						@foreach (var b in Model.Customers)
+						{
+							<tr class="border">
+								<th style="padding:1rem;">@b.FirstName @b.LastName</th>
+								<td style="padding:1rem;">@b.PhoneNumber</td>
+								<td style="padding:1rem;">2</td>
+								<td class="secondery__font fw-500" style="padding:1rem;"><b>@b.AccountBalance.ToString("C", CultureInfo.CurrentCulture)</b></td>
+								<td class="secondery__font fw-500" style="padding:1rem;"><b>@b.LoanBalance.ToString("C", CultureInfo.CurrentCulture)</b></td>
+								<td style="padding:1rem;">@(b.IsActive ? "Active" : "Deactive")</td>
+								<td style="padding:1rem;"><a data-cId="@b.Id" @@click="active_tab = 2" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 manageCustomer">Manage</a></td>
+								<td style="padding:1rem;"><a data-aId="@b.Id" @@click="active_tab = 4" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 manageAccounts">Accounts</a></td>
+							</tr>
+						}
+
+					}
+				</tbody>
+			</table>
+			<div id="customerDetails" class="mt-4" x-show="active_tab == 2">
+			</div>
+			<div class="mt-4" x-show="active_tab == 3">
+				<form asp-action="AddUpdateCustomer" asp-controller="Customers" asp-area="BackOffice" method="post">
+					<div asp-validation-summary="All" class="text-danger"></div>
+					<input type="hidden" asp-for="Customer.Id" />
+					<div class="col-lg-10 mx-auto py-4">
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="row py-4">
+									<div class="d-flex flex-column mt-2 col-5 fs-4">
+										<label for="customer_name">First Name</label>
+										<input asp-for="Customer.FirstName" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.FirstName" class="text-danger"></span>
+
+									</div>
+									<div class="d-flex flex-column mt-2 col-5 offset-1 fs-4">
+										<label for="phone_number">Last Name</label>
+										<input asp-for="Customer.LastName" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.LastName" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 fs-4 mt-4">
+										<label for="email">Email</label>
+										<input asp-for="Customer.Email" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.Email" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
+										<label for="email">Phone</label>
+										<input asp-for="Customer.PhoneNumber" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.PhoneNumber" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 fs-4 mt-4">
+										<label for="email">Address Line 1</label>
+										<input asp-for="Customer.AddressLine1" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.AddressLine1" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
+										<label for="email">Address Line 2</label>
+										<input asp-for="Customer.AddressLine2" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.AddressLine2" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 fs-4 mt-4">
+										<label for="email">City</label>
+										<input asp-for="Customer.City" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.City" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
+										<label for="email">Region</label>
+										<input asp-for="Customer.Region" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.Region" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 fs-4 mt-4">
+										<label for="email">Zip Code</label>
+										<input asp-for="Customer.Zip" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.Zip" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
+										<label for="email">Country</label>
+										<input asp-for="Customer.Country" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.Country" class="text-danger"></span>
+									</div>
+									<div class="d-flex flex-column col-5 fs-4 mt-4">
+										<label for="account_balances">Account Balances</label>
+										<input asp-for="Customer.AccountBalance" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.AccountBalance" class="text-danger"></span>
+									</div>
+
+									<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
+										<label for="first_name">Loan Balances</label>
+										<input asp-for="Customer.LoanBalance" class="text__input mt-1" placeholder="">
+										<span asp-validation-for="Customer.LoanBalance" class="text-danger"></span>
+									</div>
+
+									<div class="d-flex align-items-center col-5 fs-4 mt-4">
+										<input asp-for="Customer.IsActive" class="form-check-input m-0" type="checkbox">
+										<label class="form-check-label" style="margin-left: 1rem;" for="flexCheckDefault">
+											Active
+										</label>
+									</div>
+								</div>
+							</div>
+
+							<div class="mt-5 text-end">
+								<button type="submit" class="btn_outline fs-5 fw-600"
+										style="margin-right: 1rem;">
+									Cancel
+								</button>
+								<button type="submit"
+										class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">
+									Add
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div id="accounts" x-show="active_tab == 4"></div>
+			<div id="accountDetails" x-show="active_tab == 5"></div>
+			<div id="createAccount" x-show="active_tab == 6"></div>
+		</div>
+	</div>   
+</main>
+@section Scripts{
+	<script>
+		$(document).ready(function(){
+			var activeTab = $("#ActiveTab").val();
+			console.log(activeTab)
+			if(activeTab == 5){
+				LoadAccountTransactions($("#Account_Id").val())
+			}
+		});
+
+		function LoadAccountTransactions(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Customers/LoadAccountTransactions',
+				data: { "accountId": cId },
+				success: function (data) {
+					$('#accountDetails').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+
+
+		$(".manageCustomer").click(function () {
+			var cId = $(this).attr("data-cId");
+			LoadCustomerDetails(cId);
+		})
+
+		function LoadCustomerDetails(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Customers/LoadCustomerDetails',
+				data: { "customerId": cId },
+				success: function (data) {
+					$('#customerDetails').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+
+		$(".manageAccounts").click(function () {
+			var aId = $(this).attr("data-aId");
+			LoadAccounts(aId);
+		})
+
+		function LoadAccounts(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Customers/LoadAccounts',
+				data: { "customerId": cId },
+				success: function (data) {
+					$('#accounts').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+
+		$(".manageAccountDetails").click(function () {
+			var aId = $(this).attr("data-aId");
+			LoadAccountDetails(aId);
+		})
+
+		function LoadAccountDetails(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Customers/LoadAccountDetails',
+				data: { "accountId": cId },
+				success: function (data) {
+					$('#accountDetails').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+
+	</script>
+}

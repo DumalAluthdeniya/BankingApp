@@ -1,0 +1,44 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model IEnumerable<Support>
+@{
+	ViewData["Title"] = "Support";
+}
+<main class="col-lg-10 offset-lg-2">
+	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold" style="font-size: 22px;">Support System</h4>
+		</div>
+
+		<div>
+			@await Html.PartialAsync("_CulturePartial")
+		</div>
+	</nav>
+
+	<div class="py-4">
+		<div class="mx-4">
+			<table class="table table-hover">
+				<thead class="thead-dark">
+					<tr class="bg_primary text-white">
+						<th scope="col" style="padding:1rem;">Ticket</th>
+						<th scope="col" style="padding:1rem;">Customer</th>
+						<th scope="col" style="padding:1rem;">Subject</th>
+						<th scope="col" style="padding:1rem;">Date/Time</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var i in @Model)
+					{
+						<tr class="nav-item">
+							<th style="padding:1rem;">
+								<a asp-action="LoadSupportItems" asp-controller="Support" asp-area="BackOffice" asp-route-supportId="@i.Id">@i.Ticket</a>
+							</th>
+							<td style="padding:1rem;">@i.Customer.FirstName @i.Customer.LastName</td>
+							<td class="text_gray_dark" style="padding:1rem;">@i.Subject</td>
+							<td class="text_gray_dark" style="padding:1rem;">@i.CreatedDate</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</main>

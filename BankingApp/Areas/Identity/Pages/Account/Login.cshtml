@@ -1,0 +1,70 @@
+﻿@page
+@model LoginModel
+
+@{
+	ViewData["Title"] = "Log in";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Banking App</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+		  integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+	<link rel="stylesheet" href="~/assets/css/style.css">
+
+</head>
+
+<body>
+	<div class="d-flex justify-content-center align-items-center h_section">
+		<div class="p-lg-5 p-2 auth_panel col-lg-5 col-12 mx-auto">
+			<div class="col-10 mx-auto">
+				<div class="fs-38 text-center text_primary_hover">
+					<svg width="55" height="30" viewBox="0 0 55 30" fill="none"
+						 xmlns="http://www.w3.org/2000/svg">
+						<path d="M16.745 8.96094C16.6191 7.78243 16.0883 6.86482 15.1527 6.2081C14.2261 5.55137 13.0206 5.22301 11.5362 5.22301C10.4927 5.22301 9.59754 5.38044 8.85085 5.69531C8.10417 6.01018 7.53291 6.4375 7.13707 6.97727C6.74124 7.51705 6.53883 8.13329 6.52983 8.82599C6.52983 9.40175 6.66028 9.90104 6.92117 10.3239C7.19105 10.7467 7.5554 11.1065 8.01421 11.4034C8.47301 11.6913 8.9813 11.9342 9.53906 12.1321C10.0968 12.33 10.6591 12.4964 11.2259 12.6314L13.8168 13.2791C14.8603 13.522 15.8634 13.8504 16.826 14.2642C17.7976 14.678 18.6657 15.1998 19.4304 15.8295C20.2041 16.4593 20.8158 17.2195 21.2656 18.1101C21.7154 19.0007 21.9403 20.0443 21.9403 21.2408C21.9403 22.8601 21.5265 24.286 20.6989 25.5185C19.8712 26.742 18.6747 27.7 17.1094 28.3928C15.553 29.0765 13.6683 29.4183 11.4553 29.4183C9.30516 29.4183 7.43845 29.0855 5.85511 28.4197C4.28078 27.754 3.0483 26.7824 2.15767 25.505C1.27604 24.2275 0.799243 22.6712 0.727273 20.8359H5.6527C5.72467 21.7985 6.02154 22.5992 6.54332 23.2379C7.0651 23.8767 7.74432 24.3535 8.58097 24.6683C9.42661 24.9832 10.3712 25.1406 11.4148 25.1406C12.5033 25.1406 13.4569 24.9787 14.2756 24.6548C15.1032 24.322 15.7509 23.8632 16.2188 23.2784C16.6866 22.6847 16.925 21.992 16.9339 21.2003C16.925 20.4806 16.7135 19.8868 16.2997 19.419C15.8859 18.9422 15.3056 18.5464 14.5589 18.2315C13.8213 17.9077 12.9576 17.6198 11.968 17.3679L8.82386 16.5582C6.54782 15.9735 4.74858 15.0874 3.42614 13.8999C2.11269 12.7034 1.45597 11.1155 1.45597 9.13636C1.45597 7.50805 1.89678 6.08215 2.77841 4.85866C3.66903 3.63518 4.87902 2.68608 6.40838 2.01136C7.93774 1.32765 9.66951 0.985794 11.6037 0.985794C13.5649 0.985794 15.2831 1.32765 16.7585 2.01136C18.2429 2.68608 19.4079 3.62618 20.2536 4.83167C21.0992 6.02817 21.5355 7.40459 21.5625 8.96094H16.745ZM31.41 1.36364V29H26.4036V1.36364H31.41ZM36.8313 29V1.36364H54.5359V5.56037H41.8377V13.0632H53.3214V17.2599H41.8377V29H36.8313Z"
+							  fill="#1C3879" />
+					</svg>
+				</div>
+				<p class="text-center mt-4 text_gray_dark fw-500">Enter your credentials to access your account</p>
+
+				<form id="account" method="post" class="col-12 login__form mt-5">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+					<div class="position-relative">
+						<img src="./assets/svg/user.svg" class="position-absolute input__icon" alt="" srcset="">
+						<input asp-for="Input.Email" class="col-12 mb-3 px-5 py-3" placeholder="Enter your username">
+						<span asp-validation-for="Input.Email" class="text-danger"></span>
+
+					</div>
+					<div class="position-relative">
+						<img src="./assets/svg/key.svg" alt="" srcset="" class="position-absolute input__icon">
+						<input asp-for="Input.Password" class="col-12 mb-3 px-5 py-3" placeholder="Enter your password">
+						<span asp-validation-for="Input.Password" class="text-danger"></span>
+
+					</div>
+					<input type="submit" class="col-12 mt-4 py-3 bg_primary_hover text-white" value="Login">
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+			crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="~/assets/js/script.js"></script>
+</body>
+
+</html>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

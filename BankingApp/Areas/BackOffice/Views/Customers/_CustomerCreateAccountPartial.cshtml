@@ -1,0 +1,48 @@
+﻿@model ManageCustomersViewModel
+
+<p>Creating account  for : @Model.Account.Customer.FirstName</p>
+<form asp-action="AddUpdateAccount" asp-controller="Customers" asp-area="BackOffice" method="post">
+	<div asp-validation-summary="All" class="text-danger"></div>
+	<input type="hidden" asp-for="Account.Customer.Id" />
+	<div class="col-lg-10 mx-auto py-2">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="row py-4">
+					<div class="d-flex flex-column mt-2 col-5 fs-4">
+						<label for="customer_name">Account Type</label>
+						<select class="text__input mt-1" asp-for="Account.AccountType" asp-items="Html.GetEnumSelectList<AccountType>()" class="form-select">
+						</select>
+
+					</div>
+					<div class="d-flex flex-column mt-2 col-5 offset-1 fs-4">
+						<label for="phone_number">Account Number</label>
+						<input asp-for="Account.AccountNo" class="text__input mt-1" placeholder="">
+						<span asp-validation-for="Account.AccountNo" class="text-danger"></span>
+					</div>
+					<div class="d-flex flex-column col-5 fs-4 mt-4">
+						<label for="email">Balance</label>
+						<input asp-for="Account.Balance" class="text__input mt-1" placeholder="">
+						<span asp-validation-for="Account.Balance" class="text-danger"></span>
+					</div>
+					<div class="d-flex align-items-center col-5 fs-4 mt-4">
+						<input asp-for="Account.IsActive" class="form-check-input m-0" type="checkbox">
+						<label class="form-check-label" style="margin-left: 1rem;" for="flexCheckDefault">
+							Active
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="mt-5 text-end">
+				<button type="submit" class="btn_outline fs-5 fw-600"
+						style="margin-right: 1rem;">
+					Cancel
+				</button>
+				<button type="submit"
+						class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">
+					Add
+				</button>
+			</div>
+		</div>
+	</div>
+</form>
