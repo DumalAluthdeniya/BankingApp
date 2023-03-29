@@ -33,13 +33,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources\Areas\BackOffice\Views\Dashboard\Index.en.resx">
+    <EmbeddedResource Update="Resources\SharedResource.es.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Areas\BackOffice\Views\Dashboard\Index.fr.resx">
+    <EmbeddedResource Update="Resources\SharedResource.fr.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Home\Index.en.resx">
+    <EmbeddedResource Update="Resources\SharedResource.en.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>

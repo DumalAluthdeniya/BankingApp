@@ -1,0 +1,67 @@
+﻿@inject ISharedViewLocalizer localizer
+@model TransferViewModel
+
+@{
+	ViewData["Title"] = "Transfers";
+}
+
+<main class="col-12 d-flex flex-column col-lg-11 offset-lg-1 offset-0 ">
+	<nav class="navbar navbar-default navbar p-4 navbar__top">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold fs-2">Transfers</h4>
+		</div>
+		<div class="d-block d-lg-none" id="hamburger__icon">
+			<img src="./assets/svg/hamburger.svg" alt="" srcset="">
+		</div>
+
+		<a href="profile.html">
+			<img src="./assets/svg/user profile.svg" alt="" srcset="">
+		</a>
+	</nav>
+
+	<div class="px-4">
+		<div class="col-lg-10 mx-auto pt-5 mb-5">
+			<span class="fw-600 fs-3">sarahsmith@gmail.com</span>
+			<form asp-action="Index" asp-controller="Transfer" method="post">
+				<div asp-validation-summary="All" class="text-danger"></div>
+
+				<div class="my-5 mb__10">
+					<div class="row">
+						<div class="d-flex flex-column col-lg-6 mb-4 fs-4">
+							<label for="subject">Select your send account</label>
+							<select asp-for="SelectedSendAccount" asp-items="@Model.Accounts" class="form-select form-control text__input"></select>
+						</div>
+
+						<div class="d-flex flex-column col-lg-6 mb-4 fs-4">
+							<label for="subject">Select your request account</label>
+							<select asp-for="SelectedRequestAccount" asp-items="@Model.Accounts" class="form-select form-control text__input"></select>
+
+						</div>
+					</div>
+					<div class="row">
+						<div class="d-flex flex-column col-lg-6 col-12 fs-4">
+							<label for="number">Amount</label>
+							<input asp-for="Amount" class="text__input"
+								   placeholder="">
+						</div>
+						<div class="d-flex flex-column col-lg-6 col-12 mt_75_sm fs-4">
+							<label for="date">Date</label>
+							<input asp-for="TransactionDate" disabled class="text__input"
+								   placeholder="">
+						</div>
+					</div>
+					<div class="mt-5 text-end">
+						<button type="button" class="btn_outline fs-5 fw-600"
+								style="margin-right: 1rem;">
+							Cancel
+						</button>
+						<button type="submit"
+								class="btn_solid fs-5 fw-600 bg_primary_hover text-white">
+							Send
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</main>

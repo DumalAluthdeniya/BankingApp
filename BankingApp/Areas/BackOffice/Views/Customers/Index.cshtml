@@ -1,4 +1,4 @@
-﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+﻿@inject ISharedViewLocalizer localizer
 @model ManageCustomersViewModel
 @{
 	ViewData["Title"] = "Manage Customers";
@@ -6,14 +6,15 @@
 
 <input asp-for="@Model.ActiveTab" type="hidden" />
 <input asp-for="@Model.Account.Id" type="hidden" />
+<input asp-for="@Model.Customer.Id" type="hidden" />
 <main class="col-10 col-lg-10 offset-lg-2 offset-0 ">
 	<nav class="d-flex justify-content-between align-items-center p-4 border__bottom">
 		<div class="d-none d-lg-block">
-			<h4 class="fw-semibold" style="font-size: 22px;">Customers</h4>
+			<h4 class="fw-semibold" style="font-size: 22px;">@localizer["Customers"]</h4>
 		</div>
 
 		<div class="d-flex align-items-center">
-			<input type="text" placeholder="Search by Account number" class="search_input me-2">
+			<input type="text" placeholder="@localizer["Search by Account number"]" class="search_input me-2">
 			<a class="btn_small nav-item">
 				<img src="../assets/svg/search.svg" alt="" srcset="">
 			</a>
@@ -28,12 +29,12 @@
 	</nav>
 	<div x-data="{active_tab : @Model.ActiveTab}" class="px-4">
 		<ul class="d-flex align-items-center gap-4 nav__tabs__container pt-4">
-			<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">List of Customers</li>
-			<li class="p-3" :style="active_tab!=2 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 2 }">Customer Details</li>
-			<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">Add new Customer</li>
-			<li class="p-3" :style="active_tab!=4 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 4 }">Customer Accounts</li>
-			<li class="p-3" :style="active_tab!=5 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 5 }">Account Details</li>
-			<li class="p-3" :style="active_tab!=6 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 6 }">Create Account</li>
+			<li class="p-3 tab1" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">@localizer["List of Customers"]</li>
+			<li class="p-3" :style="active_tab!=2 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 2 }">@localizer["Customer Details"]</li>
+			<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">@localizer["Add new Customer"]</li>
+			<li class="p-3" :style="active_tab!=4 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 4 }">@localizer["Customer Accounts"]</li>
+			<li class="p-3" :style="active_tab!=5 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 5 }">@localizer["Account Details"]</li>
+			<li class="p-3" :style="active_tab!=6 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 6 }">@localizer["Create Account"]</li>
 		</ul>
 
 		<div class="py-4">
@@ -47,7 +48,7 @@
 						<th scope="col" style="padding:1rem;">Loan Balances</th>
 						<th scope="col" style="padding:1rem;">Status</th>
 						<th scope="col" colspan="2" style="padding:1rem;">Manage</th>
-						<th scope="col" style="padding:1rem;"></th>
+						<th scope="col" style="padding:1rem;">Accounts</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -176,11 +177,36 @@
 	<script>
 		$(document).ready(function(){
 			var activeTab = $("#ActiveTab").val();
-			console.log(activeTab)
 			if(activeTab == 5){
 				LoadAccountTransactions($("#Account_Id").val())
 			}
+			if (activeTab == 4) {
+				LoadAccounts($("#Customer_Id").val())
+			}
+			if (activeTab == 6) {
+				LoadAddAccount($("#Customer_Id").val())
+			}
+
+			$(".tab1").click(function(){
+				window.location.href = "/BackOffice/Customers";
+			});
 		});
+
+
+		function LoadAddAccount(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Customers/LoadAddAccount',
+				data: { "customerId": cId },
+				success: function (data) {
+					$('#createAccount').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
 
 		function LoadAccountTransactions(cId) {
 			$.ajax({

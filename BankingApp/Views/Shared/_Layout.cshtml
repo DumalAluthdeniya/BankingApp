@@ -1,52 +1,127 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BankingApp</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BankingApp.styles.css" asp-append-version="true" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - BankingApp</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/assets/css/style.css">
+
+
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BankingApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                    @await Html.PartialAsync("_CulturePartial")
+	<div class="container-fluid mx-0 pb-6">
+		<div class="row">
+			<sidebar id="sidebar__menu"
+					 class="d-none d-lg-block col-3 col-lg-1 z-3 position-fixed sidebar p-0 text-white">
+				<ul class="text-center nav__links">
+					<li class="col-12 d-flex logo  justify-content-center flex-column text-uppercase align-items-center nav__link nav__logo">
+						sif
+					</li>
+					<a href="index.html"
+					   class="col-12 d-flex nav__link__active justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+						<img src="./assets/svg/Home.svg" class="nav__link__icon text-center" draggable="false" alt=""
+							 srcset="">
+						<span>Home</span>
+					</a>
 
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+					<a href="contacts.html"
+					   class="col-12 d-flex justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+						<img src="./assets/svg/Contacts.svg" class="nav__link__icon text-center" draggable="false"
+							 alt="" srcset="">
+						<span>Contacts</span>
+					</a>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - BankingApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+					<a href="/Transfer/Index"
+					   class="col-12 d-flex justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+						<img src="./assets/svg/Payments.svg" class="nav__link__icon text-center" draggable="false"
+							 alt="" srcset="">
+						<span>Transfers</span>
+					</a>
+
+					<a href="services.html"
+					   class="col-12 d-flex justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+						<img src="./assets/svg/Loans.svg" class="nav__link__icon text-center" draggable="false" alt=""
+							 srcset="">
+						<span>Services</span>
+					</a>
+
+					<a href="languages.html"
+					   class="col-12 d-flex justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+						<img src="./assets/svg/Languages.svg" class="nav__link__icon text-center" draggable="false"
+							 alt="" srcset="">
+						<span>Languages</span>
+					</a>
+
+					<a href="support.html"
+					   class="col-12 d-flex justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+						<img src="./assets/svg/Settings.svg" class="nav__link__icon text-center" draggable="false"
+							 alt="" srcset="">
+						<span>Support</span>
+					</a>
+
+					@*<a href="login.html"
+					   class="col-12 d-flex justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+						<img src="./assets/svg/LogOut.svg" class="nav__link__icon text-center" draggable="false" alt=""
+							 srcset="">
+						<span>Log Out</span>
+
+					</a>*@
+
+					<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+						<button style="all: unset;cursor:pointer" type="submit" class="col-12 d-flex justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+							<img src="./assets/svg/LogOut.svg" class="nav__link__icon text-center" draggable="false" alt=""
+								 srcset="">
+							<span>Log Out</span>
+						</button>
+					</form>
+				</ul>
+			</sidebar>
+			@RenderBody()
+		</div>
+
+	</div>
+	<div class="menu__sm position-fixed bottom-0 z-2 d-lg-none">
+		<ul class="text-center row text-white">
+			<a href="index.html"
+			   class="col-3 d-flex text-white nav__link__active justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+				<img src="./assets/svg/Home.svg" class="nav__link__icon text-center" draggable="false" alt="" srcset="">
+				<span>Home</span>
+			</a>
+
+			<a href="payments.html"
+			   class="col-3 d-flex text-white justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+				<img src="./assets/svg/Payments.svg" class="nav__link__icon text-center" draggable="false" alt=""
+					 srcset="">
+				<span>Transfers</span>
+			</a>
+
+			<a href="services.html"
+			   class="col-3 d-flex text-white justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+				<img src="./assets/svg/money.svg" class="nav__link__icon text-center" draggable="false" alt=""
+					 srcset="">
+				<span>Services</span>
+			</a>
+
+			<a href="contacts.html"
+			   class="col-3 d-flex text-white justify-content-center flex-column text-capitalize align-items-center nav__link nav__logo">
+				<img src="./assets/svg/Contacts.svg" class="nav__link__icon text-center" draggable="false" alt=""
+					 srcset="">
+				<span>Contacts</span>
+			</a>
+		</ul>
+	</div>
+
+	<div class="overlay-container position-fixed d-none" id="hide__sidebar"></div>
+
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="~/assets/js/script.js"></script>
+
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

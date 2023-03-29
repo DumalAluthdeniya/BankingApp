@@ -1,5 +1,6 @@
 using BankingApp.Data;
 using BankingApp.Models;
+using BankingApp.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,8 @@ const string defaultCulture = "en-US";
 var supportedCultures = new[]
 {
     new CultureInfo(defaultCulture),
-    new CultureInfo("fr")
+    new CultureInfo("fr-CA"),
+    new CultureInfo("es-Es")
 };
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -48,6 +50,7 @@ builder.Services.AddMvc()
 
 
 
+builder.Services.AddTransient<ISharedViewLocalizer, SharedViewLocalizer>();
 
 
 var app = builder.Build();

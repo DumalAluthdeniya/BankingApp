@@ -123,6 +123,9 @@
   <data name="Analytics" xml:space="preserve">
     <value>Analytics</value>
   </data>
+  <data name="Customers Number" xml:space="preserve">
+    <value>Nombre de clients</value>
+  </data>
   <data name="CustomersNumber" xml:space="preserve">
     <value>Customers Number</value>
   </data>
@@ -135,7 +138,7 @@
   <data name="Total Deposits" xml:space="preserve">
     <value>Total Deposits</value>
   </data>
-  <data name="TotalLoans" xml:space="preserve">
-    <value>Total Loans</value>
+  <data name="Total Loans" xml:space="preserve">
+    <value>Prêts totaux</value>
   </data>
 </root>

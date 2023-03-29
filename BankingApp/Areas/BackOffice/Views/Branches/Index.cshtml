@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
 @inject ApplicationDbContext Context
-@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@inject ISharedViewLocalizer localizer
 
 
 @{
@@ -16,7 +16,7 @@
 <main class="col-lg-10 offset-lg-2">
 	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
 		<div class="d-none d-lg-block">
-			<h4 class="fw-semibold" style="font-size: 22px;">Manage Branches</h4>
+			<h4 class="fw-semibold" style="font-size: 22px;">@localizer["Manage Branches"]</h4>
 		</div>
 		<div>
 			@await Html.PartialAsync("_CulturePartial")
@@ -26,22 +26,22 @@
 	<div class="py-4" x-data="{active_tab : @Model.ActiveTab}">
 		<div class="px-4">
 			<ul class="d-flex align-items-center gap-4 nav__tabs__container">
-				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">List of Branches</li>
-				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 2 }" :style="active_tab!=2 ? 'color:#BEBEBE':'' ">Branch Details</li>
-				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">Add new Branch</li>
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">@localizer["List of Branches"]</li>
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 2 }" :style="active_tab!=2 ? 'color:#BEBEBE':'' ">@localizer["Branch Details"]</li>
+				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">@localizer["Add new Branch"]</li>
 			</ul>
 
 			<div class="py-4" x-show="active_tab == 1">
 				<table class="table">
 					<thead class="thead-dark">
 						<tr class="bg_primary text-white border">
-							<th scope="col" style="padding:1rem;">Name</th>
-							<th scope="col" style="padding:1rem;">Phone Number</th>
-							<th scope="col" style="padding:1rem;">Manager</th>
-							<th scope="col" style="padding:1rem;">Status</th>
+							<th scope="col" style="padding:1rem;">@localizer["Name"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Phone Number"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Manager"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Status"]</th>
 							@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
 							{
-								<th scope="col" style="padding:1rem;">Manage</th>
+								<th scope="col" style="padding:1rem;">@localizer["Manage"]</th>
 							}
 						</tr>
 					</thead>
@@ -58,7 +58,7 @@
 									@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
 									{
 										<td @@click="active_tab = 2" style="padding:1rem;">
-											<a data-bId="@b.Id" style="border-radius: 4px;" class="bg_primary text-white nav-item text-center p-2 manageBranch">Manage</a>
+											<a data-bId="@b.Id" style="border-radius: 4px;" class="bg_primary text-white nav-item text-center p-2 manageBranch">@localizer["Manage"]</a>
 										</td>
 									}
 								</tr>

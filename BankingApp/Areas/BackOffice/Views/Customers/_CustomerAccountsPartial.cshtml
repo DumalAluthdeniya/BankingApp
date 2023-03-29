@@ -9,7 +9,7 @@
 			<th scope="col" style="padding:1rem;">Account Type</th>
 			<th scope="col" style="padding:1rem;">Account No</th>
 			<th scope="col" style="padding:1rem;">Account Balance</th>
-			<th scope="col" style="padding:1rem;">Status</th>
+			<th scope="col" style="padding:1rem;">Created Date</th>
 			<th scope="col" style="padding:1rem;">Manage</th>
 		</tr>
 	</thead>
@@ -22,7 +22,7 @@
 					<th style="padding:1rem;">@a.AccountType</th>
 					<td style="padding:1rem;">@a.AccountNo</td>
 					<td class="secondery__font fw-500" style="padding:1rem;"><b>@a.Balance.ToString("C", CultureInfo.CurrentCulture)</b></td>
-					<td style="padding:1rem;">@(a.IsActive ? "Active" : "Deactivated")</td>
+					<td style="padding:1rem;">@a.CreatedDate.ToString("g",CultureInfo.CurrentCulture)</td>
 					<td style="padding:1rem;"><a data-aId="@a.Id" @@click="active_tab = 5" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 manageAccountDetails">Manage</a></td>
 				</tr>
 			}

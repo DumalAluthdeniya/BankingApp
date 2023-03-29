@@ -1,9 +1,180 @@
-﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+﻿@inject ISharedViewLocalizer localizer
+@model HomeViewModel
+
 @{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">@localizer["Welcome"]</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<main class="col-12 col-lg-11 offset-lg-1 offset-0 ">
+	<nav class="navbar navbar-default navbar p-4  border__bottom">
+
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold" style="font-size: 26px;">Welcome back @Model.User.FirstName @Model.User.LastName</h4>
+			<p class="text__gray__dark">Here’s what’s happening with your store today</p>
+		</div>
+		<div class="d-block d-lg-none" id="hamburger__icon">
+			<img src="./assets/svg/hamburger.svg" alt="" srcset="">
+		</div>
+
+		<a href="profile.html">
+			<img src="./assets/svg/user profile.svg" alt="" srcset="">
+		</a>
+	</nav>
+
+	<div class="home__content">
+		<div class="row mx-0">
+			<div class="col-12 col-lg-6 order-lg-1 order-2">
+				<div class="p-lg-2 pt-lg-4 pt-4 mt-lg-0 mt-sm-4">
+					<h4 class="text__gray__dark">Total Balance</h4>
+					<h3 class="fw-semibold secondery__font">@Model.TotalBalance.ToString("C",CultureInfo.CurrentCulture)</h3>
+					<div class="d-flex align-items-center mt-4 card__scroll">
+						<div class="col-3 card__action">
+							<div class="card__icon">
+								<svg width="100%" height="100%" fill="none"
+									 xmlns="http://www.w3.org/2000/svg">
+									<path d="M4.32678 10.25C3.91257 10.25 3.57678 10.5858 3.57678 11C3.57678 11.4142 3.91257 11.75 4.32678 11.75H10.3268C10.741 11.75 11.0768 11.4142 11.0768 11C11.0768 10.5858 10.741 10.25 10.3268 10.25H4.32678Z"
+										  fill="#2A7DFB" />
+									<path fill-rule="evenodd" clip-rule="evenodd"
+										  d="M3.32678 0C1.66993 0 0.326782 1.34315 0.326782 3V13C0.326782 14.6569 1.66993 16 3.32678 16H17.3268C18.9836 16 20.3268 14.6569 20.3268 13V3C20.3268 1.34315 18.9836 0 17.3268 0H3.32678ZM17.3268 1.5H3.32678C2.49836 1.5 1.82678 2.17157 1.82678 3V4.25H18.8268V3C18.8268 2.17157 18.1552 1.5 17.3268 1.5ZM1.82678 13V5.75H18.8268V13C18.8268 13.8284 18.1552 14.5 17.3268 14.5H3.32678C2.49835 14.5 1.82678 13.8284 1.82678 13Z"
+										  fill="#2A7DFB" />
+								</svg>
+							</div>
+
+							<p>Deposit</p>
+						</div>
+
+						<a href="payments.html"
+						   class="col-3 card__action">
+							<div class="card__icon">
+								<svg fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path fill-rule="#1C3879" clip-rule="evenodd"
+										  d="M11.0356 4.94227C9.6492 5.18746 8.32363 5.66401 7.13556 6.35176C5.3318 7.39593 3.92595 8.88004 3.09577 10.6164C2.26559 12.3528 2.04838 14.2635 2.4716 16.1068C2.89482 17.9501 3.93946 19.6433 5.47343 20.9723C7.0074 22.3013 8.9618 23.2063 11.0895 23.573C13.2172 23.9396 15.4225 23.7514 17.4268 23.0322C19.431 22.313 21.144 21.095 22.3493 19.5323C23.1431 18.503 23.6932 17.3546 23.9762 16.1534H19.4463C19.2643 16.6002 19.0179 17.028 18.7109 17.4261C17.9865 18.3654 16.9569 19.0974 15.7522 19.5297C14.5476 19.962 13.222 20.0751 11.9432 19.8548C10.6643 19.6344 9.48962 19.0904 8.56763 18.2916C7.64563 17.4928 7.01774 16.4751 6.76336 15.3672C6.50899 14.2593 6.63954 13.1108 7.13852 12.0672C7.6375 11.0235 8.4825 10.1315 9.56665 9.50391C10.0262 9.2379 10.5199 9.02445 11.0356 8.86681V4.94227ZM11.7698 2.92006C12.5726 2.84247 13.2293 3.41702 13.2293 4.11677V9.17484C13.2293 9.8746 12.5571 10.4222 11.7936 10.6506C11.4394 10.7565 11.1003 10.9018 10.7854 11.0841C10.062 11.5029 9.49818 12.0981 9.16523 12.7945C8.83229 13.4909 8.74517 14.2571 8.91491 14.9964C9.08464 15.7357 9.5036 16.4148 10.1188 16.9477C10.734 17.4807 11.5178 17.8437 12.3711 17.9907C13.2244 18.1378 14.1089 18.0623 14.9127 17.7739C15.7165 17.4854 16.4035 16.997 16.8869 16.3702C17.0973 16.0974 17.2651 15.8036 17.3874 15.4967C17.651 14.8353 18.283 14.2529 19.0907 14.2529H24.929C25.7367 14.2529 26.3999 14.8219 26.3103 15.5174C26.0775 17.3253 25.3477 19.0654 24.1733 20.5882C22.727 22.4634 20.6713 23.925 18.2663 24.7881C15.8612 25.6512 13.2147 25.877 10.6615 25.437C8.1083 24.997 5.76302 23.9109 3.92226 22.3162C2.08149 20.7214 0.827918 18.6896 0.320052 16.4776C-0.187813 14.2656 0.0728417 11.9728 1.06906 9.88912C2.06527 7.80546 3.7523 6.02453 5.91681 4.77153C7.6745 3.75403 9.68296 3.12178 11.7698 2.92006Z"
+										  fill="#1C3879" />
+									<path fill-rule="evenodd" clip-rule="evenodd"
+										  d="M26.9009 9.81833C26.7612 9.22546 26.5562 8.64408 26.2876 8.08235C25.7364 6.92944 24.9285 5.88188 23.9099 4.99948C22.8914 4.11707 21.6823 3.41711 20.3515 2.93956C19.7031 2.70689 19.0321 2.52923 18.3477 2.40821V6.33274C18.4585 6.36659 18.5682 6.40303 18.6769 6.44204C19.4768 6.72907 20.2036 7.14979 20.8157 7.68016C21.4279 8.21053 21.9135 8.84017 22.2449 9.53313C22.2899 9.62731 22.3319 9.72241 22.371 9.81833H26.9009ZM29.2351 10.4544C29.3246 11.1499 28.6615 11.7189 27.8538 11.7189H22.0155C21.2078 11.7189 20.5757 11.1365 20.3121 10.475C20.2833 10.4028 20.252 10.3312 20.2181 10.2604C19.9971 9.79805 19.6731 9.37792 19.2646 9.02403C18.8561 8.67014 18.3712 8.38942 17.8375 8.1979C17.7557 8.16857 17.6731 8.14143 17.5897 8.11648C16.8263 7.8881 16.1541 7.34054 16.1541 6.64078V1.58271C16.1541 0.882952 16.8108 0.308415 17.6135 0.386006C18.841 0.504652 20.0455 0.772623 21.191 1.1837C22.7879 1.75677 24.2389 2.59672 25.4611 3.6556C26.6833 4.71448 27.6529 5.97156 28.3143 7.35505C28.7888 8.34749 29.0981 9.39103 29.2351 10.4544Z"
+										  fill="#1C3879" />
+								</svg>
+
+							</div>
+							<p>Transfer to Loan</p>
+						</a>
+
+						<a href="payments.html"
+						   class="col-3 card__action">
+							<div class="card__icon">
+								<svg fill="#FDBC64" xmlns="http://www.w3.org/2000/svg">
+									<path d="M15.8552 11.7625C15.9408 11.8958 16.0646 11.9999 16.2074 12.0684C17.299 12.5925 18.0527 13.7082 18.0527 15V17C18.0527 17.4142 18.3885 17.75 18.8027 17.75C19.2169 17.75 19.5527 17.4142 19.5527 17V15C19.5527 12.3766 17.426 10.25 14.8027 10.25C14.694 10.25 14.645 10.3902 14.7272 10.4614C15.1624 10.838 15.5429 11.2763 15.8552 11.7625Z"
+										  fill="#FDBC64" />
+									<path fill-rule="evenodd" clip-rule="evenodd"
+										  d="M4.80273 11.75C3.00781 11.75 1.55273 13.2051 1.55273 15V17C1.55273 17.4142 1.21695 17.75 0.802734 17.75C0.388521 17.75 0.0527344 17.4142 0.0527344 17V15C0.0527344 12.3766 2.17938 10.25 4.80273 10.25H10.8027C13.4261 10.25 15.5527 12.3766 15.5527 15V17C15.5527 17.4142 15.2169 17.75 14.8027 17.75C14.3885 17.75 14.0527 17.4142 14.0527 17V15C14.0527 13.2051 12.5977 11.75 10.8027 11.75H4.80273Z"
+										  fill="#FDBC64" />
+									<path d="M12.6732 6.55748C12.7621 6.3884 12.9035 6.25336 13.0682 6.15651C13.8069 5.72208 14.3027 4.91894 14.3027 4C14.3027 3.08106 13.8069 2.27792 13.0682 1.84349C12.9035 1.74664 12.7621 1.6116 12.6732 1.44252C12.4246 0.970105 12.1093 0.538266 11.7398 0.159537C11.6821 0.100375 11.72 0 11.8027 0C14.0118 0 15.8027 1.79086 15.8027 4C15.8027 6.20914 14.0118 8 11.8027 8C11.72 8 11.6821 7.89963 11.7398 7.84046C12.1093 7.46173 12.4246 7.0299 12.6732 6.55748Z"
+										  fill="#FDBC64" />
+									<path fill-rule="evenodd" clip-rule="evenodd"
+										  d="M7.80273 6.5C9.18345 6.5 10.3027 5.38071 10.3027 4C10.3027 2.61929 9.18345 1.5 7.80273 1.5C6.42202 1.5 5.30273 2.61929 5.30273 4C5.30273 5.38071 6.42202 6.5 7.80273 6.5ZM7.80273 8C10.0119 8 11.8027 6.20914 11.8027 4C11.8027 1.79086 10.0119 0 7.80273 0C5.5936 0 3.80273 1.79086 3.80273 4C3.80273 6.20914 5.5936 8 7.80273 8Z"
+										  fill="#FDBC64" />
+								</svg>
+
+							</div>
+							<p>Transfer to local contact</p>
+						</a>
+					</div>
+
+					<div class="col-12 mx-auto accounts__card my-5" x-data="{active_tab : 1}">
+						<div class="accounts__card__title">
+							<h3 class="text__heading">Accounts</h3>
+						</div>
+						<ul class="nav nav-pills nav-fill px-lg-4 px-2 nav__tabs__account">
+							<li class="nav-item nav-item-active p-3" @@click="active_tab = 1">All</li>
+							<li class="nav-item p-3" @@click="active_tab = 2">Savings</li>
+							<li class="nav-item p-3"  @@click="active_tab = 3">Current</li>
+							<li class="nav-item p-3" @@click="active_tab = 4">Loans</li>
+						</ul>
+
+						<div id="accAll" class="accounts__card__title" x-show="active_tab == 1">
+							<ul>
+								@foreach (var a in Model.Accounts)
+								{
+									<a href="transactions.html"
+								   class="d-flex justify-content-between align-items-center accounts__list__item py-4">
+										<div>@a.AccountType - @a.AccountNo</div>
+										<div class="fw-semibol secondery__font">@a.Balance.ToString("C",CultureInfo.CurrentCulture)</div>
+									</a>
+								}
+
+							</ul>
+						</div>
+						<div id="accSavings" class="accounts__card__title" x-show="active_tab == 2">
+							<ul>
+								@foreach (var a in Model.Accounts.Where(a => a.AccountType == AccountType.Savings))
+								{
+									<a href="transactions.html"
+								   class="d-flex justify-content-between align-items-center accounts__list__item py-4">
+										<div>@a.AccountType - @a.AccountNo</div>
+										<div class="fw-semibol secondery__font">@a.Balance.ToString("C",CultureInfo.CurrentCulture)</div>
+									</a>
+								}
+
+							</ul>
+						</div>
+						<div id="accSavings" class="accounts__card__title" x-show="active_tab ==3">
+							<ul>
+								@foreach (var a in Model.Accounts.Where(a => a.AccountType == AccountType.Current))
+								{
+									<a href="transactions.html"
+								   class="d-flex justify-content-between align-items-center accounts__list__item py-4">
+										<div>@a.AccountType - @a.AccountNo</div>
+										<div class="fw-semibol secondery__font">@a.Balance.ToString("C",CultureInfo.CurrentCulture)</div>
+									</a>
+								}
+
+							</ul>
+						</div>
+						<div id="loans" class="accounts__card__title" x-show="active_tab == 4">
+							<ul>
+								@foreach (var a in Model.Loans)
+								{
+									<a href="transactions.html"
+								   class="d-flex justify-content-between align-items-center accounts__list__item py-4">
+										<div>@a.Id</div>
+										<div class="fw-semibol secondery__font">@a.BankOfferAmount.ToString("C",CultureInfo.CurrentCulture)</div>
+									</a>
+								}
+
+							</ul>
+						</div>				
+					</div>
+				</div>
+
+			</div>
+			<div class="col-12 d-none d-lg-block col-lg-6 order-lg-2 order-1 bg__secondary pt-4 p-lg-4">
+				<h3 class="text__heading">My Card</h3>
+				<div class="d-flex flex-column position-relative justify-content-between align-items-start col-12 col-lg-8 col-md-10 mx-auto credit__card px-4 mt-4 text-left text-white">
+					<h4 class="py-4 z-2 card__name">Aouina Sarah</h4>
+					<div class="pt-4 z-2 card__info">
+						<p class="card__type">Amazon Platinium</p>
+						<p class="card__number">
+							4756 <span class="mx-1"></span> &#9679; &#9679; &#9679;
+							&#9679; <span class="mx-1"></span> &#9679; &#9679; &#9679; &#9679; <span class="mx-1"></span>9018
+						</p>
+						<p class="card__balance">$3,469.52</p>
+					</div>
+				</div>
+				<div class="d-none d-lg-block">
+					<div class="d-flex justify-content-between align-items-center my-4">
+						<h3 class="text__heading">Account Summary</h3>
+						<select>
+							<option value="">2022</option>
+							<option value="">2021</option>
+							<option value="">2020</option>
+							<option value="">2019</option>
+							<option value="">2018</option>
+						</select>
+					</div>
+					<canvas id="myChart"></canvas>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</main>

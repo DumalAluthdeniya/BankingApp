@@ -4,9 +4,11 @@ using BankingApp.Data;
 using BankingApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
 using PasswordGenerator;
 using System.Data;
 
@@ -18,29 +20,45 @@ namespace BankingApp.Areas.BackOffice.Controllers
 	public class CustomersController : Controller
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly ILogger<HomeController> _logger;
+		private readonly ILogger<CustomersController> _logger;
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly IEmailSender _emailSender;
+		private readonly IWebHostEnvironment _hostingEnvironment;
 
-		public CustomersController(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, ILogger<HomeController> logger, UserManager<ApplicationUser> userManager)
+
+		public CustomersController(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, ILogger<CustomersController> logger, UserManager<ApplicationUser> userManager, IEmailSender emailSender, IWebHostEnvironment hostingEnvironment)
 		{
 			_context = context;
 			_roleManager = roleManager;
 			_logger = logger;
 			_userManager = userManager;
+			_emailSender = emailSender;
+			_hostingEnvironment = hostingEnvironment;
 		}
 
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index(int activeTab = 1, string custId = null)
 		{
 			try
 			{
+				if (activeTab == 4 || activeTab == 6)
+				{
+					return View(new ManageCustomersViewModel()
+					{
+						Customer = await _userManager.FindByIdAsync(custId),
+
+						ActiveTab = activeTab
+
+					});
+				}				
 				return View(new ManageCustomersViewModel()
 				{
 					Customers = await GetUsersInRole("Customer"),
 					Customer = new ApplicationUser()
 					{
 						Id = string.Empty
-					}
+					},
+					ActiveTab = activeTab
 
 				});
 			}
@@ -108,6 +126,8 @@ namespace BankingApp.Areas.BackOffice.Controllers
 					model.Customer.Id = Guid.NewGuid().ToString();
 					await _userManager.CreateAsync(model.Customer, password);
 					await _userManager.AddToRoleAsync(model.Customer, "Customer");
+
+					await SendEmailConfirmation(model.Customer);
 				}
 
 				return RedirectToAction("Index");
@@ -185,23 +205,18 @@ namespace BankingApp.Areas.BackOffice.Controllers
 		{
 			try
 			{
+				if(model.Account.AccountNo <= 0)
+				{
+					ModelState.AddModelError("Empty Account No", "Account No cannot be empty.");
+					return RedirectToAction("Index", new { activeTab = 6, custId = model.Account.Customer.Id });
+
+				}
 				var customer = await _userManager.FindByIdAsync(model.Account.Customer.Id);
 				model.Account.Customer = customer;
 				await _context.Accounts.AddAsync(model.Account);
 				await _context.SaveChangesAsync();
-
-				var accounts = await _context.Accounts.Where(a => a.Customer == customer).ToListAsync();
-				var loans = await _context.Loans.Where(a => a.Customer == customer).ToListAsync();
-				return View("Index", new ManageCustomersViewModel()
-				{
-					Customer = customer,
-					Accounts = accounts,
-					Loans = loans,
-					Account = new Account(),
-					ActiveTab = 4
-				});
-
-
+			
+				return RedirectToAction("Index", new { activeTab = 4, custId = customer.Id });		
 
 			}
 			catch (Exception)
@@ -274,12 +289,8 @@ namespace BankingApp.Areas.BackOffice.Controllers
 				await _context.SaveChangesAsync();
 
 				var trans = await _context.Transactions.Where(a => a.AccountId == account.Id).ToListAsync();
-				return View("Index", new ManageCustomersViewModel()
-				{
-					Transactions = trans,
-					Account = account,
-					ActiveTab = 5
-				});
+				return RedirectToAction("Index", new { activeTab = 5 });
+
 
 			}
 			catch (Exception)
@@ -287,6 +298,35 @@ namespace BankingApp.Areas.BackOffice.Controllers
 
 				throw;
 			}
+		}
+
+		private async Task<bool> SendEmailConfirmation(ApplicationUser user)
+		{
+			try
+			{
+				var emailTemplate = Path.Combine(_hostingEnvironment.WebRootPath, "Templates", "MembershipRequestConfirmation.html");
+
+				var builder = new BodyBuilder();
+				using (var sourceReader = System.IO.File.OpenText(emailTemplate))
+				{
+					builder.HtmlBody = await sourceReader.ReadToEndAsync();
+				}
+
+				var messageBody = builder.HtmlBody;
+				messageBody = messageBody.Replace("fullName", user.FirstName + " " + user.LastName);
+				messageBody = messageBody.Replace("userName", user.Email);
+				messageBody = messageBody.Replace("userPassword", user.DefaultPassword);
+				messageBody = messageBody.Replace("appUrl", "https://localhost:7219/");
+
+				await _emailSender.SendEmailAsync(user.Email, "SIF User Account Created", messageBody);
+
+				return true;
+			}
+			catch (Exception ee)
+			{
+				_logger.LogError(ee, ee.Message);
+			}
+			return false;
 		}
 	}
 }
