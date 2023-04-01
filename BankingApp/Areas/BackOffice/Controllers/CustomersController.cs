@@ -25,9 +25,10 @@ namespace BankingApp.Areas.BackOffice.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IEmailSender _emailSender;
 		private readonly IWebHostEnvironment _hostingEnvironment;
+		private readonly IConfiguration _configuration;
 
 
-		public CustomersController(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, ILogger<CustomersController> logger, UserManager<ApplicationUser> userManager, IEmailSender emailSender, IWebHostEnvironment hostingEnvironment)
+		public CustomersController(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, ILogger<CustomersController> logger, UserManager<ApplicationUser> userManager, IEmailSender emailSender, IWebHostEnvironment hostingEnvironment, IConfiguration configuration)
 		{
 			_context = context;
 			_roleManager = roleManager;
@@ -35,22 +36,23 @@ namespace BankingApp.Areas.BackOffice.Controllers
 			_userManager = userManager;
 			_emailSender = emailSender;
 			_hostingEnvironment = hostingEnvironment;
+			_configuration = configuration;
 		}
 
-		public async Task<IActionResult> Index(int activeTab = 1, string custId = null)
+		public async Task<IActionResult> Index(int activeTab = 1, string? custId = null, int accId = 0)
 		{
 			try
 			{
-				if (activeTab == 4 || activeTab == 6)
+				if (activeTab == 4 || activeTab == 5 || activeTab == 6)
 				{
 					return View(new ManageCustomersViewModel()
 					{
 						Customer = await _userManager.FindByIdAsync(custId),
-
+						Account = await _context.Accounts.Include(a => a.Customer).FirstOrDefaultAsync(a => a.Id == accId),
 						ActiveTab = activeTab
 
 					});
-				}				
+				}
 				return View(new ManageCustomersViewModel()
 				{
 					Customers = await GetUsersInRole("Customer"),
@@ -99,8 +101,8 @@ namespace BankingApp.Areas.BackOffice.Controllers
 					mUser.LoanBalance = model.Customer.LoanBalance;
 					mUser.FirstName = model.Customer.FirstName;
 					mUser.LastName = model.Customer.LastName;
-					mUser.Email = model.Customer.Email;
-					mUser.PhoneNumber = model.Customer.PhoneNumber;
+					mUser.Email = model.Email;
+					mUser.PhoneNumber = model.PhoneNumber;
 					mUser.AddressLine1 = model.Customer.AddressLine1;
 					mUser.AddressLine2 = model.Customer.AddressLine2;
 					mUser.City = model.Customer.City;
@@ -113,7 +115,8 @@ namespace BankingApp.Areas.BackOffice.Controllers
 				}
 				else
 				{
-					var user = await _userManager.FindByEmailAsync(model.Customer.Email);
+
+					var user = await _userManager.FindByEmailAsync(model.Email);
 					if (user != null)
 					{
 						ModelState.AddModelError("Duplicate Customer", "Customer with same email already exists.");
@@ -122,8 +125,11 @@ namespace BankingApp.Areas.BackOffice.Controllers
 					}
 					var pwd = new Password();
 					var password = pwd.Next();
-					model.Customer.UserName = model.Customer.Email;
+					model.Customer.UserName = model.Email;
 					model.Customer.Id = Guid.NewGuid().ToString();
+					model.Customer.DefaultPassword = password;
+					model.Customer.Email = model.Email;
+					model.Customer.PhoneNumber = model.PhoneNumber;
 					await _userManager.CreateAsync(model.Customer, password);
 					await _userManager.AddToRoleAsync(model.Customer, "Customer");
 
@@ -205,7 +211,7 @@ namespace BankingApp.Areas.BackOffice.Controllers
 		{
 			try
 			{
-				if(model.Account.AccountNo <= 0)
+				if (model.Account.AccountNo <= 0)
 				{
 					ModelState.AddModelError("Empty Account No", "Account No cannot be empty.");
 					return RedirectToAction("Index", new { activeTab = 6, custId = model.Account.Customer.Id });
@@ -215,8 +221,8 @@ namespace BankingApp.Areas.BackOffice.Controllers
 				model.Account.Customer = customer;
 				await _context.Accounts.AddAsync(model.Account);
 				await _context.SaveChangesAsync();
-			
-				return RedirectToAction("Index", new { activeTab = 4, custId = customer.Id });		
+
+				return RedirectToAction("Index", new { activeTab = 4, custId = customer.Id });
 
 			}
 			catch (Exception)
@@ -231,7 +237,7 @@ namespace BankingApp.Areas.BackOffice.Controllers
 		{
 			try
 			{
-				var acc = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == accountId);
+				var acc = await _context.Accounts.Include(a => a.Customer).FirstOrDefaultAsync(a => a.Id == accountId);
 				var trans = await _context.Transactions
 					.Include(t => t.CreatedBy)
 					.Include(t => t.DestinationAccount)
@@ -240,7 +246,7 @@ namespace BankingApp.Areas.BackOffice.Controllers
 
 				return PartialView("_CustomerAccountTransactionsPartial", new ManageCustomersViewModel()
 				{
-					Transaction= new Transaction(),
+					Transaction = new Transaction(),
 					Transactions = trans,
 					Account = acc
 				});
@@ -288,8 +294,8 @@ namespace BankingApp.Areas.BackOffice.Controllers
 				await _context.Transactions.AddAsync(model.Transaction);
 				await _context.SaveChangesAsync();
 
-				var trans = await _context.Transactions.Where(a => a.AccountId == account.Id).ToListAsync();
-				return RedirectToAction("Index", new { activeTab = 5 });
+				//var trans = await _context.Transactions.Where(a => a.AccountId == account.Id).ToListAsync();
+				return RedirectToAction("Index", new { activeTab = 5, accId = account.Id });
 
 
 			}
@@ -304,7 +310,7 @@ namespace BankingApp.Areas.BackOffice.Controllers
 		{
 			try
 			{
-				var emailTemplate = Path.Combine(_hostingEnvironment.WebRootPath, "Templates", "MembershipRequestConfirmation.html");
+				var emailTemplate = Path.Combine(_hostingEnvironment.WebRootPath, "Templates", "UserCreationConfirmation.html");
 
 				var builder = new BodyBuilder();
 				using (var sourceReader = System.IO.File.OpenText(emailTemplate))
@@ -316,7 +322,7 @@ namespace BankingApp.Areas.BackOffice.Controllers
 				messageBody = messageBody.Replace("fullName", user.FirstName + " " + user.LastName);
 				messageBody = messageBody.Replace("userName", user.Email);
 				messageBody = messageBody.Replace("userPassword", user.DefaultPassword);
-				messageBody = messageBody.Replace("appUrl", "https://localhost:7219/");
+				messageBody = messageBody.Replace("appUrl", _configuration.GetValue<string>("appUrl"));
 
 				await _emailSender.SendEmailAsync(user.Email, "SIF User Account Created", messageBody);
 
@@ -328,5 +334,15 @@ namespace BankingApp.Areas.BackOffice.Controllers
 			}
 			return false;
 		}
+
+		[HttpGet("IsEmailInUser")]
+		[HttpPost("IsEmailInUser")]
+		[AllowAnonymous]
+		public async Task<IActionResult> IsEmailInUser([Bind(Prefix = "Customer.Email")] string email)
+		{
+			var user = await _userManager.FindByNameAsync(email);
+			return user == null ? Json(true) : Json($"Email {email} is already taken");
+		}
+
 	}
 }

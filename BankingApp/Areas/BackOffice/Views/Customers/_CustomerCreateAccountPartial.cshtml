@@ -1,6 +1,6 @@
 ﻿@model ManageCustomersViewModel
 
-<p>Creating account  for : @Model.Account.Customer.FirstName</p>
+<p>Creating account  for : @Model.Account.Customer.FirstName @Model.Account.Customer.LastName </p>
 <form asp-action="AddUpdateAccount" asp-controller="Customers" asp-area="BackOffice" method="post">
 	<div asp-validation-summary="All" class="text-danger"></div>
 	<input type="hidden" asp-for="Account.Customer.Id" />

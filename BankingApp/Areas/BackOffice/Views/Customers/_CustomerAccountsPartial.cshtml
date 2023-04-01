@@ -1,6 +1,6 @@
 ﻿@model ManageCustomersViewModel
 
-<p>Accounts of : @Model.Customer.FirstName</p>
+<p>Accounts of : @Model.Customer.FirstName @Model.Customer.LastName</p>
 
 <div><button id="AddAccount" data-cId="@Model.Customer.Id" class="btn btn-primary mb-2" @@click="active_tab = 6">+Create Account</button></div>
 <table class="table">

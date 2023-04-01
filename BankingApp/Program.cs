@@ -52,8 +52,18 @@ builder.Services.AddMvc()
 
 builder.Services.AddTransient<ISharedViewLocalizer, SharedViewLocalizer>();
 
+builder.WebHost.UseSentry(o =>
+{
+    o.Dsn = "https://23d5817eaf9d43dfbfbef53d9c6a2441@o474576.ingest.sentry.io/4504937432350720";
+    // When configuring for the first time, to see what the SDK is doing:
+    o.Debug = true;
+    // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+    // We recommend adjusting this value in production.
+    o.TracesSampleRate = 1.0;
+});
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -67,6 +77,7 @@ else
     app.UseHsts();
 }
 
+app.UseSentryTracing();
 
 app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 

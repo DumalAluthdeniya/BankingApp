@@ -1,0 +1,63 @@
+﻿@inject ISharedViewLocalizer localizer
+@model SupportViewModel
+
+@{
+    ViewData["Title"] = "Support";
+}
+
+<main class="col-12 d-flex flex-column col-lg-11 offset-lg-1 offset-0 ">
+    <nav class="navbar navbar-default navbar p-4 navbar__top">
+
+        <div class="d-none d-lg-block">
+            <h4 class="fw-semibold fs-2">Support</h4>
+        </div>
+        <div class="d-block d-lg-none" id="hamburger__icon">
+            <img src="./assets/svg/hamburger.svg" alt="" srcset="">
+        </div>
+
+        <a href="profile.html">
+            <img src="./assets/svg/user profile.svg" alt="" srcset="">
+        </a>
+    </nav>
+
+    <div class="px-4 content_page flex-shrink-1">
+        <div class="col-lg-8 mx-auto pt-5 mb-5">
+            <p class="text-center fs-4">
+                Do you have any questions? Please do not hesitate to contact us
+                directly. Our team will come
+                back to you within a matter of hours to help you.
+            </p>
+            <form asp-action="AddSupportTicket" asp-controller="Support" method="post" class="support_form" class="mt-5">
+                <div class="row my-4">
+                    <div class="d-flex flex-column col-lg-6 col-12 fs-4">
+                        <label asp-for="Support.Customer.FirstName">First Name</label>
+                        <input asp-for="Support.Customer.FirstName" class="text__input" disabled placeholder="">
+                    </div>
+                    <div class="d-flex flex-column col-lg-6 col-12 mt_75_sm fs-4">
+                        <label asp-for="Support.Customer.LastName">Last Name</label>
+                        <input asp-for="Support.Customer.LastName" class="text__input" disabled placeholder="">
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column col-lg-12 mb-4 fs-4">
+                    <label for="subject">Subject</label>
+                    <select asp-for="Support.Subject" class="form-select form-control text__input">
+                        <option value="Payment Issues">Payment Issues</option>
+                        <option value="Bank">Bank</option>
+                    </select>
+                </div>
+
+                <div class="d-flex flex-column col-lg-12 mb-4 fs-4">
+                    <label asp-for="Message">Message</label>
+                    <textarea class="text__input" asp-for="Message" cols="30" rows="8"></textarea>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit"
+                            class="btn_solid fs-4 bg_primary_hover text-white">
+                        Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

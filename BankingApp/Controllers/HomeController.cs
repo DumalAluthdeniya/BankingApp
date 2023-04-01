@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Sentry;
 using System.Diagnostics;
 
 namespace BankingApp.Controllers
@@ -26,26 +27,35 @@ namespace BankingApp.Controllers
         }
         public async Task<IActionResult> Index()
 		{
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-            if (currentUser != null)
-			{
-                var user = await _userManager.FindByIdAsync(currentUser.Id);
-                if (await _userManager.IsInRoleAsync(user, "Employer"))
+            try
+            {
+                var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+                if (currentUser != null)
                 {
-                    return RedirectToAction("Index", "Dashboard", new { Area = "BackOffice" });
-				}
-                if (await _userManager.IsInRoleAsync(user, "Customer"))
-                {
-
-                    var model = new HomeViewModel()
+                    var user = await _userManager.FindByIdAsync(currentUser.Id);
+                    if (await _userManager.IsInRoleAsync(user, "Employer"))
                     {
-                        Accounts = await _context.Accounts.Where(a => a.Customer == currentUser).ToListAsync(),
-                        Loans = await _context.Loans.Where(a => a.Customer == currentUser).ToListAsync(),
-                        User  = currentUser
-                    };
-                    return View(model);
+                        return RedirectToAction("Index", "Dashboard", new { Area = "BackOffice" });
+                    }
+                    if (await _userManager.IsInRoleAsync(user, "Customer"))
+                    {
+
+                        var model = new HomeViewModel()
+                        {
+                            Accounts = await _context.Accounts.Where(a => a.Customer == currentUser).ToListAsync(),
+                            Loans = await _context.Loans.Where(a => a.Customer == currentUser).ToListAsync(),
+                            User = currentUser
+                        };
+                        return View(model);
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw;
+            }
+       
             return View();
         }
 

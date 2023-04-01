@@ -6,25 +6,30 @@ namespace SGP.Utils
 {
 	public class EmailSender : IEmailSender
 	{
+		private readonly IConfiguration _configuration;
+		public EmailSender(IConfiguration configuration)
+		{
+			_configuration = configuration;
+		}
 
 		public Task SendEmailAsync(string email, string subject, string message)
 		{
 			MailMessage m = new MailMessage();
 			SmtpClient sc = new SmtpClient();
-			m.From = new MailAddress("info@sgp.lk");
+			m.From = new MailAddress(_configuration.GetValue<string>("SMTPUser"));
 			m.To.Add(email);
 			m.Subject = subject;
 			m.IsBodyHtml = true;
 			m.Body = message;
-			sc.Host = "mail5018.site4now.net";
+			sc.Host = _configuration.GetValue<string>("SMTPServer");
 			string str1 = "gmail.com";
-			string str2 = "info@sgp.lk".ToLower();
+			string str2 = _configuration.GetValue<string>("SMTPUser").ToLower();
 			if (str2.Contains(str1))
 			{
 				try
 				{
 					sc.Port = 587;
-					sc.Credentials = new System.Net.NetworkCredential("info@sgp.lk", "Sgp@1957");
+					sc.Credentials = new System.Net.NetworkCredential(_configuration.GetValue<string>("SMTPUser"), _configuration.GetValue<string>("SMTPPassword"));
 					sc.EnableSsl = true;
 					return sc.SendMailAsync(m);
 
@@ -39,7 +44,7 @@ namespace SGP.Utils
 				try
 				{
 					sc.Port = 25;
-					sc.Credentials = new System.Net.NetworkCredential("info@sgp.lk", "Sgp@1957");
+					sc.Credentials = new System.Net.NetworkCredential(_configuration.GetValue<string>("SMTPUser"), _configuration.GetValue<string>("SMTPPassword"));
 					sc.EnableSsl = false;
 					return sc.SendMailAsync(m);
 				}
