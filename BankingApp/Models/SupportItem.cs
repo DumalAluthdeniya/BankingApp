@@ -11,5 +11,6 @@ namespace BankingApp.Models
         public DateTime SendDate { get; set; }
         public bool IsFromSupport { get; set; }
         public ApplicationUser? Sender { get; set; }
+        public virtual List<SupportFile>? Files { get; set; }
     }
 }

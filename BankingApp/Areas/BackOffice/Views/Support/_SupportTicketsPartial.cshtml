@@ -1,0 +1,83 @@
+﻿@inject ISharedViewLocalizer localizer
+@model SupportsViewModel
+
+<div class="row">
+	<p class="col-2">@localizer["Filter by status"]: </p>
+	<div class="col-4">
+		<div class="form-check form-check-inline">
+			<input id="" class="form-check-input" onchange="filterme()" type="radio" name="free" value="Active" checked>
+			<label class="form-check-label" for="free">@localizer["Active"]</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Closed">
+			<label class="form-check-label" for="free">@localizer["Closed"]</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="">
+			<label class="form-check-label" for="free">@localizer["All"]</label>
+		</div>
+	</div>
+</div>
+<table id="tableSupport" class="table table-hover">
+	<thead class="thead-dark">
+		<tr class="bg_primary text-white">
+			<th scope="col" style="padding:1rem;">@localizer["Ticket"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Customer"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Area : Subject"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Status"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Date"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Created By"]</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var i in @Model.Supports)
+		{
+			<tr data-tId="@i.Id" class="nav-item ticketDetails" @@click="active_tab = 2">
+				<th style="padding:1rem;">@i.Ticket</th>
+				<td style="padding:1rem;">@i.Customer?.FirstName @i.Customer?.LastName</td>
+				<td class="text_gray_dark" style="padding:1rem;">@i.Area : @i.Subject</td>
+				<td class="text_gray_dark" style="padding:1rem;">@(i.IsActive == true ? "Active" : "Closed")</td>
+				<td class="text_gray_dark" style="padding:1rem;">@i.CreatedDate</td>
+				<td style="padding:1rem;">@i.CreatedBy?.FirstName @i.CreatedBy?.LastName</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<script>
+
+	$(document).ready(function(){
+		//filterme();
+	})
+
+	var otable = $("#tableSupport").dataTable({
+		order: [[4, 'desc']],
+	});
+
+	function filterme() {
+		var frees = $('input:radio[name="free"]:checked')[0].value;
+		otable.fnFilter(frees, 3, false, false, false, false);
+	}
+
+	$("#radio1").attr('checked', true).trigger('click');
+
+
+	$('#tableSupport tbody').on('click', '.ticketDetails', function () {
+		var cId = $(this).attr("data-tId");
+		LoadTicketDetails(cId);
+	})
+	function LoadTicketDetails(cId) {
+		$.ajax({
+			type: "GET",
+			async: true,
+			url: '/BackOffice/Support/LoadTicketDetails',
+			data: { "ticketId": cId },
+			success: function (data) {
+				$('#ticketDetail').html(data);
+			},
+			error: function (error) {
+				alert('Error occured. Please try again later.');
+			}
+		});
+	}
+</script>

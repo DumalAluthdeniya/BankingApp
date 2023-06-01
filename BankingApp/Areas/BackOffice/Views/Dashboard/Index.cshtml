@@ -1,210 +1,262 @@
 ﻿@inject ISharedViewLocalizer localizer
 @model DashboardViewModel
+@{
+	ViewData["Title"] = "Dashboard";
+}
 
 <main class="col-lg-10 offset-lg-2 bg_gray_lighten">
-    <nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
-        <div class="d-none d-lg-block">
-            <h4 class="fw-semibold" style="font-size: 22px;">Dashboard</h4>
-        </div>
-		
-        <div>
-			@await Html.PartialAsync("_CulturePartial")
-        </div>
-    </nav>
+	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold" style="font-size: 22px;">Dashboard</h4>
+		</div>
+		<div class="d-flex flex-row-reverse">
+			<a asp-action="Profile" asp-controller="Employers" asp-area="BackOffice">
+				<img src="~/assets/svg/user profile.svg" alt="" srcset="">
+			</a>
+			<div style="margin-right: 50px">
+				@await Html.PartialAsync("_CulturePartial")
+			</div>
 
-    <div class="py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-4">
-                    <div class="p-5 d-flex bg-white rounded justify-content-between align-items-center">
-                        <div class="">
+		</div>
+	</nav>
+
+	<div class="py-4">
+		<div class="container">
+			<div class="row">
+				<div class="col-4">
+					<div class="p-5 d-flex bg-white rounded justify-content-between align-items-center">
+						<div class="">
 							<p class="text_gray_dark fw-400">@localizer["Customers Number"]</p>
-                            <h4 class="secondery__font">@Model.CustomerCount</h4>
-                        </div>
-                        <div class="btn_small bg_blue_light">
-                            <img src="../assets/svg/users.svg" alt="" srcset="">
-                        </div>
-                    </div>
-                </div>
+							<h4 class="secondery__font">@Model.CustomerCount</h4>
+						</div>
+						<a href="/BackOffice/Customers">
+							<div class="btn_small bg_blue_light">
+								<img src="../assets/svg/users.svg" alt="" srcset="">
+							</div>
+						</a>
+					</div>
+				</div>
 
-                <div class="col-4">
-                    <div class="p-5 d-flex bg-white rounded justify-content-between align-items-center">
-                        <div class="">
+				<div class="col-4">
+					<div class="p-5 d-flex bg-white rounded justify-content-between align-items-center">
+						<div class="">
 							<p class="text_gray_dark fw-400">@localizer["Total Loans"]</p>
-                            <h4 class="secondery__font">@Model.TotalLoansSum</h4>
-                        </div>
-                        <div class="btn_small">
-                            <img src="../assets/svg/wallet.svg" alt="" srcset="">
-                        </div>
-                    </div>
-                </div>
+							<h4 class="secondery__font">@Model.TotalLoansSum.ToString("C",CultureInfo.CurrentCulture)</h4>
+						</div>
+						<a href="/BackOffice/Loans">
+							<div class="btn_small">
+								<img src="../assets/svg/wallet.svg" alt="" srcset="">
+							</div>
+						</a>
+					</div>
+				</div>
 
-                <div class="col-4">
-                    <div class="p-5 d-flex bg-white rounded justify-content-between align-items-center">
-                        <div class="">
+				<div class="col-4">
+					<div class="p-5 d-flex bg-white rounded justify-content-between align-items-center">
+						<div class="">
 							<p class="text_gray_dark fw-400">@localizer["Total Deposits"]</p>
-                            <h4 class="secondery__font">@Model.TotalDeposits</h4>
-                        </div>
-                        <div class="btn_small bg_primary">
-                            <img src="../assets/svg/Card.svg" alt="" srcset="">
-                        </div>
-                    </div>
-                </div>
-            </div>
+							<h4 class="secondery__font">@Model.TotalDeposits.ToString("C",CultureInfo.CurrentCulture)</h4>
+						</div>
+						<a href="/BackOffice/Customers">
+							<div class="btn_small bg_primary">
+								<img src="../assets/svg/Card.svg" alt="" srcset="">
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
 
-            <div class="my-4">
-                <div class="row">
-                    <div class="col-8">
-                        <div class="bg-white p-4">
-                            <div class="d-flex justify-content-between p-4 rounded align-items-center">
+			<div class="my-4">
+				<div class="row">
+					<div class="col-8">
+						<div class="bg-white p-4">
+							<div class="d-flex justify-content-between p-4 rounded align-items-center">
 								<h6 class="card__name fw-600">@localizer["Analytics"]</h6>
-                                <div class="d-flex align-items-center">
-                                    <ul class="d-flex align-items-center">
-                                        <li class="fs-5 d-flex align-items-center">
-                                            <div class="bg_primary rounded-circle me-2" style="width: 10px;height:10px"></div> Income
-                                        </li>
-                                        <li class="fs-5 ms-4 d-flex align-items-center">
-                                            <div class="bg_blue_light rounded-circle me-2" style="width: 10px;height:10px"></div>
-                                            Outcome
-                                        </li>
-                                    </ul>
-                                    <select name="" class="form-control nav-item ms-4" id="">
-                                        <option value="">2020</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="chart"></div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-white p-4">
-                            <div class="d-flex justify-content-between p-4 rounded align-items-center">
+								<div class="d-flex align-items-center">
+									<ul class="d-flex align-items-center">
+										<li class="fs-5 d-flex align-items-center">
+											<div class="bg_primary rounded-circle me-2" style="width: 10px;height:10px"></div> Inflow
+										</li>
+										<li class="fs-5 ms-4 d-flex align-items-center">
+											<div class="bg_blue_light rounded-circle me-2" style="width: 10px;height:10px"></div>
+											Outflow
+										</li>
+									</ul>
+									<select name="" class="form-control nav-item ms-4" id="">
+										<option value="">2023</option>
+									</select>
+								</div>
+							</div>
+							<div id="chart"></div>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="bg-white p-4">
+							<div class="d-flex justify-content-between p-4 rounded align-items-center">
 								<h6 class="card__name fw-600">@localizer["Account type"]</h6>
-                            </div>
-                            <div class="p-4" id="pipeChart"></div>
-                            <ul class="d-flex col-10 mx-auto justify-content-between align-items-center">
-                                <li class="fs-5 ms-4 d-flex align-items-center">
-                                    <div class="bg_blue_light rounded-circle me-2" style="width: 10px;height:10px"></div> @localizer["Savings"]
-                                </li>
-                                <li class="fs-5 d-flex align-items-center">
-                                    <div class="rounded-circle me-2" style="width: 10px;height:10px;background-color: #1573FF;">
+							</div>
+							<div class="p-4" id="pipeChart"></div>
+							<ul class="d-flex col-10 mx-auto justify-content-between align-items-center">
+								<li class="fs-5 ms-4 d-flex align-items-center">
+									<div class="bg_blue_light rounded-circle me-2" style="width: 10px;height:10px"></div> @localizer["Savings"]
+								</li>
+								<li class="fs-5 d-flex align-items-center">
+									<div class="rounded-circle me-2" style="width: 10px;height:10px;background-color: #1573FF;">
 									</div> @localizer["Spending"]
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </main>
 
 @section Scripts{
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	<script>
-		var options = {
+		var deposits;
+		var withdrawals;
+		var months;
+		var accountTypeDeposits;
+		$(document).ready(function () {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Dashboard/GetTransactions',
+				success: function (data) {
+					console.log(data);
+					deposits = data.deposits;
+					withdrawals = data.withdrawals;
+					months = data.months;
+					accountTypeDeposits = data.accountTypeDeposits
 
-			legend: {
-				show: false
-			},
-			series: [{
-				name: 'Income',
-				data: [10, 20, 30, 40, 50]
-			}, {
-				name: 'Outcome',
-				data: [25, 40, 10, 15, 35]
-			},],
-			chart: {
-				type: 'bar',
-				height: 350,
-				toolbar: {
+					if (deposits.length < 5) {
+						var add = new Array(5 - deposits.length).fill(0);
+						deposits = add.concat(deposits);
+					}
+
+					if (withdrawals.length < 5) {
+						var add = new Array(5 - withdrawals.length).fill(0);
+						withdrawals = add.concat(withdrawals);
+					}
+
+					loadChart(deposits, withdrawals, months, accountTypeDeposits)
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		});
+
+
+		function loadChart(deposits, withdrawals, months, accountTypeDeposits) {
+			var options = {
+
+				legend: {
+					show: false
+				},
+				series: [{
+					name: 'Income',
+					data: deposits
+				}, {
+					name: 'Outcome',
+					data: withdrawals
+				},],
+				chart: {
+					type: 'bar',
+					height: 350,
+					toolbar: {
+						show: false,
+					},
+				},
+				plotOptions: {
+					bar: {
+						horizontal: false,
+						columnWidth: '20%',
+						borderRadiusApplication: 'end',
+						borderRadius: 5,
+					},
+				},
+				dataLabels: {
+					enabled: false,
+				},
+				stroke: {
+					show: true,
+					width: 2,
+					colors: ['transparent']
+				},
+				yaxis: {
+					labels: {
+						formatter: function (value) {
+							return value + "";
+						}
+					},
+				},
+				xaxis: {
+					categories: months,
+				},
+				fill: {
+					opacity: 1,
+					colors: ['#64CFF6', '#1C3879']
+				},
+				tooltip: {
+					y: {
+						formatter: function (val) {
+							return `${val.toFixed(2)}`
+						}
+					}
+				},
+				grid: {
+					borderColor: '#8C89B480',
+					strokeDashArray: 3
+				}
+			};
+
+			var optionsAccount = {
+				series: accountTypeDeposits,
+				labels: ['Saving', 'Spending'],
+				colors: ['#64CFF6', '#1573FF'],
+				chart: {
+					type: 'donut',
+				},
+				plotOptions: {
+					pie: {
+						expandOnClick: false
+					}
+				},
+				legend: {
 					show: false,
+					position: 'bottom'
 				},
-			},
-			plotOptions: {
-				bar: {
-					horizontal: false,
-					columnWidth: '20%',
-					borderRadiusApplication: 'end',
-					borderRadius: 5,
+				fill: {
+					opacity: 1,
+					colors: ['#64CFF6', '#1573FF']
 				},
-			},
-			dataLabels: {
-				enabled: false,
-			},
-			stroke: {
-				show: true,
-				width: 2,
-				colors: ['transparent']
-			},
-			yaxis: {
-				labels: {
-					formatter: function (value) {
-						return value + "K";
+				tooltip: {
+					enabled: true,
+					fillSeriesColor: false,
+					y: {
+						formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+							return `${value.toFixed(2)}`
+						}
 					}
 				},
-			},
-			xaxis: {
-				categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun'],
-			},
-			fill: {
-				opacity: 1,
-				colors: ['#64CFF6', '#1C3879']
-			},
-			tooltip: {
-				y: {
-					formatter: function (val) {
-						return `$ ${val}`
-					}
+				dataLabels: {
+					enabled: false,
+				},
+				markers: {
+					colors: ['#64CFF6', '#1573FF']
 				}
-			},
-			grid: {
-				borderColor: '#8C89B480',
-				strokeDashArray: 3
-			}
-		};
 
-		var optionsAccount = {
-			series: [60, 30],
-			labels: ['Spending', 'Saving'],
-			colors: ['#1573FF', '#64CFF6'],
-			chart: {
-				type: 'donut',
-			},
-			plotOptions: {
-				pie: {
-					expandOnClick: false
-				}
-			},
-			legend: {
-				show: false,
-				position: 'bottom'
-			},
-			fill: {
-				opacity: 1,
-				colors: ['#1573FF', '#64CFF6']
-			},
-			tooltip: {
-				enabled: true,
-				fillSeriesColor: false,
-				y: {
-					formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
-						return `${value} %`
-					}
-				}
-			},
-			dataLabels: {
-				enabled: false,
-			},
-			markers: {
-				colors: ['#1573FF', '#64CFF6']
-			}
+			};
+			var chart = new ApexCharts(document.querySelector("#chart"), options);
+			chart.render();
 
-		};
-		var chart = new ApexCharts(document.querySelector("#chart"), options);
-		chart.render();
+			var chartAccount = new ApexCharts(document.querySelector("#pipeChart"), optionsAccount);
+			chartAccount.render();
+		}
 
-		var chartAccount = new ApexCharts(document.querySelector("#pipeChart"), optionsAccount);
-		chartAccount.render();
 	</script>
 }

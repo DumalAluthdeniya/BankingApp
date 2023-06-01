@@ -1,7 +1,19 @@
 ﻿@model ManageEmployersViewModel
+@using BankingApp.Areas.BackOffice;
+@using BankingApp.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@inject ISharedViewLocalizer localizer
+
+@{
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
 
 <div class="col-lg-10 mx-auto py-4">
-	<form asp-action="AddUpdateEmployer" asp-controller="Employers" asp-area="BackOffice" method="post">
+	<form id="formUpdateEmployee" asp-action="AddUpdateEmployer" asp-controller="Employers" asp-area="BackOffice" method="post">
 		<div asp-validation-summary="All" class="text-danger"></div>
 		<input type="hidden" asp-for="Employer.Id" />
 		<div v class="row">
@@ -9,30 +21,30 @@
 				<div class="row py-4">
 					<div class="col-4">
 						<div class="d-flex flex-column  fs-4">
-							<label for="first_name">First Name</label>
+							<label for="first_name">@localizer["First Name"]</label>
 							<input asp-for="Employer.FirstName" class="text__input mt-1" placeholder="">
 							<span asp-validation-for="Employer.FirstName" class="text-danger"></span>
 
 						</div>
 						<div class="d-flex flex-column  fs-4">
-							<label for="first_name">Last Name</label>
+							<label for="first_name">@localizer["Last Name"]</label>
 							<input asp-for="Employer.LastName" class="text__input mt-1" placeholder="">
 							<span asp-validation-for="Employer.LastName" class="text-danger"></span>
 
 						</div>
 						<div class="d-flex flex-column mt-3 fs-4">
-							<label for="first_name">Email</label>
-							<input asp-for="Employer.Email" class="text__input mt-1" placeholder="">
-							<span asp-validation-for="Employer.Email" class="text-danger"></span>
+							<label for="first_name">@localizer["Email"]</label>
+							<input asp-for="Email" class="text__input mt-1" placeholder="">
+							<span asp-validation-for="Email" class="text-danger"></span>
 						</div>
 						<div class="d-flex flex-column col-12 fs-4 mt-3">
-							<label for="first_name">Phone number</label>
-							<input asp-for="Employer.PhoneNumber" class="text__input mt-1" placeholder="">
-							<span asp-validation-for="Employer.PhoneNumber" class="text-danger"></span>
+							<label for="first_name">@localizer["Phone number"]</label>
+							<input asp-for="PhoneNumber" class="text__input mt-1" placeholder="">
+							<span asp-validation-for="PhoneNumber" class="text-danger"></span>
 						</div>
 
 						<div class="d-flex flex-column col-12 fs-4 mt-3">
-							<label for="first_name">Address</label>
+							<label for="first_name">@localizer["Address"]</label>
 							<input asp-for="Employer.AddressLine1" class="text__input mt-1" placeholder="Address Line 1">
 							<span asp-validation-for="Employer.AddressLine1" class="text-danger"></span>
 						</div>
@@ -57,31 +69,60 @@
 						</div>
 
 						<div class="d-flex flex-column col-12 fs-4">
-							<input asp-for="Employer.Region" class="text__input mt-1" placeholder="Region">
+							<input asp-for="Employer.Region" class="text__input mt-1" placeholder="State/Province">
 							<span asp-validation-for="Employer.Region" class="text-danger"></span>
+						</div>
+						<div class="d-flex flex-column col-12 fs-4 mt-3">
+							<label for="first_name">Password</label>
+							<input asp-for="Password" class="text__input mt-1" placeholder="">
+							<span asp-validation-for="Password" class="text-danger"></span>
+						</div>
+						<div class="d-flex align-items-center col-5 fs-4 mt-4">
+							<input asp-for="Employer.IsActive" class="form-check-input m-0" type="checkbox">
+							<label class="form-check-label" style="margin-left: 1rem;" for="flexCheckDefault">
+								@localizer["Active"]
+							</label>
 						</div>
 					</div>
 					<div class="col-6 offset-1">
-						<p>Permission List</p>
+						<p>@localizer["Permission List"]</p>
 						<div class="d-flex flex-column gap-3">
 
 							@for (var i = 0; i < Model.EPermissions.Count; i++)
 							{
+								var checkboxView = new Dictionary<string, object>
+							{
+							{"class", "v"+i},
+							{"style", "transform: scale(1.2);"}
+							};
+								var checkboxUpdate = new Dictionary<string, object>
+							{
+							{"class", "u"+i},
+							{"style", "transform: scale(1.2);"}
+							};
+
+								if (!Model.EPermissions[i].IsSelected)
+								{
+									checkboxView.Add("disabled", true);
+									checkboxUpdate.Add("disabled", true);
+								}
+
 								<div class="d-flex align-items-center justify-content-between pb-2 border-bottom-1">
 
 									<div>
-										@Html.CheckBoxFor(x => x.EPermissions[i].IsSelected, new { @class="form-check-input", style="transform: scale(1.2);" })
+										@Html.CheckBoxFor(x => x.EPermissions[i].IsSelected, new { @class="form-check-input permission", style="transform: scale(1.2);",data_pid =i })
 										@Html.HiddenFor(x => x.EPermissions[i].Permission.Id)
 										@Html.HiddenFor(x => x.EPermissions[i].Permission.Name)
 										@Html.DisplayFor(model => model.EPermissions[i].Permission.Name,new { @class="form-check-label", style="margin-left: 0.5rem;" })
 
 									</div>
 
+
 									<div class="d-flex gap-3 align-items-center justify-content-between">
-										@Html.RadioButtonFor(model => model.EPermissions[i].SelectedPermission,PermissionType.View, new { style="transform: scale(1.2);"} )
-										@Html.Label(PermissionType.View.ToString())
-										@Html.RadioButtonFor(model => model.EPermissions[i].SelectedPermission,PermissionType.Update, new { style="transform: scale(1.2);" } )
-										@Html.Label(PermissionType.Update.ToString())
+										@Html.RadioButtonFor(model => model.EPermissions[i].SelectedPermission,PermissionType.View, checkboxView )
+										@localizer["View"]
+										@Html.RadioButtonFor(model => model.EPermissions[i].SelectedPermission,PermissionType.Update, checkboxUpdate )
+										@localizer["View & Update"]
 										@Html.RadioButtonFor(model => model.EPermissions[i].SelectedPermission,PermissionType.Restricted, new { style="transform: scale(1.2);display:none;" } )
 									</div>
 
@@ -95,14 +136,73 @@
 
 			<div class="mt-5 text-end">
 				<a asp-action="Index" asp-controller="Employers" asp-area="BackOffice" class="btn_outline fs-5 fw-600"
-						style="margin-right: 1rem;">
-					Cancel
+				   style="margin-right: 1rem;">
+					@localizer["Cancel"]
 				</a>
-				<button type="submit"
+				@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Employees")).PermissionType == PermissionType.Update)
+				{
+					<button type="submit"
 						class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">
-					Update
-				</button>
+						@localizer["Update"]
+					</button>
+				}
 			</div>
 		</div>
 	</form>
 </div>
+
+<script>
+	$(".permission").change(function () {
+		var id = $(this).attr("data-pid");
+		var idv = ".v" + id;
+		var idu = ".u" + id;
+		if (this.checked) {
+			$(idv).prop('checked', true);
+			$(idv).removeProp('disabled');
+			$(idu).removeProp('disabled');
+		}
+		else {
+
+			$(idv).removeProp('checked');
+			$(idu).removeProp('checked');
+			$(idv).prop('disabled', true);
+			$(idu).prop('disabled', true);
+		}
+	});
+
+	$('#formUpdateEmployee').validate({
+		errorClass: "my-error-class",
+		rules: {
+			'Employer.FirstName': {
+				required: true
+			},
+			'Employer.LastName': {
+				required: true,
+			},
+			'Transaction.Reference': {
+				required: true
+			},
+			'Email': {
+				required: true
+			},
+			'PhoneNumber': {
+				required: true
+			},
+			'Employer.AddressLine1': {
+				required: true
+			},
+			'Employer.City': {
+				required: true
+			},
+			'Employer.Zip': {
+				required: true
+			},
+			'Employer.Country': {
+				required: true
+			},
+			'Employer.Region': {
+				required: true
+			}
+		}
+	});
+</script>

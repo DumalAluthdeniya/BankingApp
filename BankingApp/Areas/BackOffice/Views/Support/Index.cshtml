@@ -1,44 +1,263 @@
-﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
-@model IEnumerable<Support>
+﻿@using BankingApp.Areas.BackOffice;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@using BankingApp.Data;
+@inject ISharedViewLocalizer localizer
+@model SupportsViewModel
 @{
 	ViewData["Title"] = "Support";
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
 }
+<style>
+
+	.ui-autocomplete {
+		z-index: 100;
+		position: unset;
+	}
+
+	.text__input {
+		margin-bottom: 20px;
+		margin-top: 0px;
+	}
+
+	.my-error-class {
+		color: red;
+	}
+
+	html, body {
+		margin: 0;
+		height: 100%;
+		overflow: hidden
+	}
+</style>
+<input asp-for="@Model.ActiveTab" type="hidden" />
+<input id="ticketId" type="hidden" value="@ViewBag.TicketId" />
 <main class="col-lg-10 offset-lg-2">
 	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
 		<div class="d-none d-lg-block">
-			<h4 class="fw-semibold" style="font-size: 22px;">Support System</h4>
+			<h4 class="fw-semibold" style="font-size: 22px;">@localizer["Support"]</h4>
 		</div>
+		<div class="d-flex flex-row-reverse">
+			<a asp-action="Profile" asp-controller="Employers" asp-area="BackOffice">
+				<img src="~/assets/svg/user profile.svg" alt="" srcset="">
+			</a>
+			<div style="margin-right: 50px">
+				@await Html.PartialAsync("_CulturePartial")
+			</div>
 
-		<div>
-			@await Html.PartialAsync("_CulturePartial")
 		</div>
 	</nav>
 
-	<div class="py-4">
+	<div class="py-4" x-data="{active_tab : @Model.ActiveTab}">
 		<div class="mx-4">
-			<table class="table table-hover">
-				<thead class="thead-dark">
-					<tr class="bg_primary text-white">
-						<th scope="col" style="padding:1rem;">Ticket</th>
-						<th scope="col" style="padding:1rem;">Customer</th>
-						<th scope="col" style="padding:1rem;">Subject</th>
-						<th scope="col" style="padding:1rem;">Date/Time</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var i in @Model)
-					{
-						<tr class="nav-item">
-							<th style="padding:1rem;">
-								<a asp-action="LoadSupportItems" asp-controller="Support" asp-area="BackOffice" asp-route-supportId="@i.Id">@i.Ticket</a>
-							</th>
-							<td style="padding:1rem;">@i.Customer.FirstName @i.Customer.LastName</td>
-							<td class="text_gray_dark" style="padding:1rem;">@i.Subject</td>
-							<td class="text_gray_dark" style="padding:1rem;">@i.CreatedDate</td>
+			<ul class="d-flex align-items-center gap-4 nav__tabs__container">
+				<li class="p-3 tab1" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">@localizer["Tickets"]</li>
+				<li class="p-3" :style="active_tab!=2 ? 'color:#BEBEBE':'' " :class="{ 'nav__link__tab__active':  active_tab == 2 }">@localizer["Ticket Details"]</li>
+				@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Support")).PermissionType == PermissionType.Update)
+				{
+
+					<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">@localizer["New Ticket"]</li>
+				}
+
+			</ul>
+			<div class="py-4" x-show="active_tab == 1">
+				<div class="row">
+					<p class="col-2">@localizer["Filter by status"]: </p>
+					<div class="col-4">
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Active" checked>
+							<label class="form-check-label" for="free">@localizer["Active"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Closed">
+							<label class="form-check-label" for="free">@localizer["Closed"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="">
+							<label class="form-check-label" for="free">@localizer["All"]</label>
+						</div>
+					</div>
+				</div>
+				<table id="tableSupport" class="table table-hover">
+					<thead class="thead-dark">
+						<tr class="bg_primary text-white">
+							<th scope="col" style="padding:1rem;">@localizer["Ticket"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Customer"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Area : Subject"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Status"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Date"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Created By"]</th>
 						</tr>
-					}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						@foreach (var i in @Model.Supports)
+						{
+							<tr data-tId="@i.Id" class="nav-item ticketDetails" @@click="active_tab = 2">
+								<th style="padding:1rem;">@i.Ticket</th>
+								<td style="padding:1rem;">@i.Customer?.FirstName @i.Customer?.LastName</td>
+								<td class="text_gray_dark" style="padding:1rem;">@i.Area : @i.Subject</td>
+								<td class="text_gray_dark" style="padding:1rem;">@(i.IsActive == true ? "Active" : "Closed")</td>
+								<td class="text_gray_dark" style="padding:1rem;">@i.CreatedDate</td>
+								<td style="padding:1rem;">@i.CreatedBy?.FirstName @i.CreatedBy?.LastName</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+			<div class="py-4" x-show="active_tab == 2">
+				<div id="ticketDetail"></div>
+			</div>
+
+			<div class="py-4" x-show="active_tab == 3">
+				<div class="row">
+					<div class="col-lg-12 p-0">
+						<form id="myForm" asp-action="AddSupportTicket" asp-controller="Support" asp-asp-area="BackOffice" method="post" class="support_form" class="mt-5" enctype="multipart/form-data">
+							<div class="bg__secondary" style="padding: 2rem;">
+								<div class="row">
+									<div class="d-flex flex-column col-4 fs-4 mt-1">
+										<label for="first_name">@localizer["Customer"]</label>
+										@*<select asp-for="SelectedCustomer" asp-items="@Model.Customers" class="form-select form-control"></select>*@
+										<input id="CustomerAutoComplete" name="CustomerAutoComplete" type="text" value="" class="text__input ui-autocomplete" placeholder="Search by customer name">
+										<input type="hidden" asp-for="SelectedCustomer" />
+
+									</div>
+
+									<div class="d-flex flex-column col-8 fs-4">
+										<label for="subject">@localizer["Area"]</label>
+										<select asp-for="Support.Area" class="form-select text__input form-control mt-1">
+											<option value="Insights">Insights</option>
+											<option value="Payment">Payments</option>
+											<option value="Transactions">Transactions</option>
+										</select>
+									</div>
+									<div class="d-flex flex-column col-lg-12 mt-1 fs-4">
+										<label asp-for="Message">@localizer["Subject"]</label>
+										<input class="text__input" asp-for="Support.Subject" />
+									</div>
+									<div class="d-flex flex-column col-lg-12 mt-1 fs-4">
+										<label asp-for="Message">@localizer["Message"]</label>
+										<textarea class="text__input" asp-for="Message" cols="30" rows="8"></textarea>
+									</div>
+									<div class="d-flex flex-column col-lg-12 mt-1 fs-4">
+										<label asp-for="Files">@localizer["Upload files"]</label>
+										<input class="text__input" asp-for="Files" multiple />
+									</div>
+									<div class="col-12 text-center mt-3">
+										<button type="submit"
+												class="btn_solid fs-4 bg_primary_hover text-white submitBtn">
+											Create
+										</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </main>
+@section Scripts{
+	<script>
+
+		$(document).ready(function () {
+
+			var activeTab = $("#ActiveTab").val();
+			var tId = $("#ticketId").val();
+
+			if (activeTab == 2) {
+				LoadTicketDetails(tId);
+			}
+
+			filterme();
+
+		});
+
+		$(".tab1").click(function () {
+			window.location.href = '/BackOffice/Support';
+		});
+
+		var otable = $("#tableSupport").dataTable({
+			order: [[3, 'desc']],
+		});
+
+		$('#tableSupport tbody').on('click', '.ticketDetails', function () {
+			var cId = $(this).attr("data-tId");
+			LoadTicketDetails(cId);
+		})
+
+		function LoadTicketDetails(cId) {
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Support/LoadTicketDetails',
+				data: { "ticketId": cId },
+				success: function (data) {
+					$('#ticketDetail').html(data);
+				},
+				error: function (error) {
+					alert('Error occured. Please try again later.');
+				}
+			});
+		}
+
+		function filterme() {
+			var frees = $('input:radio[name="free"]:checked')[0].value;
+			otable.fnFilter(frees, 3, false, false, false, false);
+		}
+
+
+		$("#CustomerAutoComplete").autocomplete({
+			source: function (request, response) {
+				$.ajax({
+					url: "/BackOffice/Support/Customers",
+					type: "GET",
+					dataType: "json",
+					data: { term: request.term },
+					success: function (data) {
+						response($.map(data, function (item) {
+							return { label: item.label, value: item.label, id: item.id };
+						}));
+					}
+				});
+			},
+			//minLength: 2,
+			select: function (event, ui) {
+				$("#SelectedCustomer").val(ui.item.id);
+				$("#SelectedCustomer").valid();
+			}
+		});
+
+		$("#CustomerAutoComplete").keyup(function () {
+			$("#SelectedCustomer").val("");
+		})
+
+
+		$('#myForm').validate({ // initialize the plugin
+			ignore: [],
+			errorClass: "my-error-class",
+			rules: {
+				'SelectedCustomer': {
+					required: true,
+				},
+				'Support.Subject': {
+					required: true,
+				},
+				'Message': {
+					required: true,
+					maxlength: 1000
+				}
+			},
+			messages: {
+				'SelectedCustomer': 'Invalid customer'
+			},
+			submitHandler: function (e) {
+				$(".submitBtn").attr("disabled", true);
+				return true;
+			}
+		});
+	</script>
+}

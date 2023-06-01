@@ -1,10 +1,11 @@
 ﻿@using BankingApp.Areas.BackOffice;
 @using BankingApp.Data;
-@model ManageBranchesViewModel
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
 @inject ApplicationDbContext Context
 @inject ISharedViewLocalizer localizer
+@model ManageBranchesViewModel
+
 
 
 @{
@@ -16,10 +17,16 @@
 <main class="col-lg-10 offset-lg-2">
 	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
 		<div class="d-none d-lg-block">
-			<h4 class="fw-semibold" style="font-size: 22px;">@localizer["Manage Branches"]</h4>
+			<h4 class="fw-semibold" style="font-size: 22px;">Branches</h4>
 		</div>
-		<div>
-			@await Html.PartialAsync("_CulturePartial")
+		<div class="d-flex flex-row-reverse">
+			<a asp-action="Profile" asp-controller="Employers" asp-area="BackOffice">
+				<img src="~/assets/svg/user profile.svg" alt="" srcset="">
+			</a>
+			<div style="margin-right: 50px">
+				@await Html.PartialAsync("_CulturePartial")
+			</div>
+
 		</div>
 	</nav>
 
@@ -28,21 +35,39 @@
 			<ul class="d-flex align-items-center gap-4 nav__tabs__container">
 				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 1 }" @@click="active_tab = 1">@localizer["List of Branches"]</li>
 				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 2 }" :style="active_tab!=2 ? 'color:#BEBEBE':'' ">@localizer["Branch Details"]</li>
-				<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">@localizer["Add new Branch"]</li>
+				@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
+				{
+					<li class="p-3" :class="{ 'nav__link__tab__active':  active_tab == 3 }" @@click="active_tab = 3">@localizer["Add new Branch"]</li>
+				}
 			</ul>
 
 			<div class="py-4" x-show="active_tab == 1">
-				<table class="table">
+				<div class="row">
+					<p class="col-2">@localizer["Filter by status"]: </p>
+					<div class="col-4">
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Active" checked>
+							<label class="form-check-label" for="free">@localizer["Active"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Disabled">
+							<label class="form-check-label" for="free">@localizer["Disabled"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="">
+							<label class="form-check-label" for="free">@localizer["All"]</label>
+						</div>
+					</div>
+				</div>
+				<table id="tableBranches" class="table">
 					<thead class="thead-dark">
 						<tr class="bg_primary text-white border">
 							<th scope="col" style="padding:1rem;">@localizer["Name"]</th>
 							<th scope="col" style="padding:1rem;">@localizer["Phone Number"]</th>
 							<th scope="col" style="padding:1rem;">@localizer["Manager"]</th>
 							<th scope="col" style="padding:1rem;">@localizer["Status"]</th>
-							@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
-							{
-								<th scope="col" style="padding:1rem;">@localizer["Manage"]</th>
-							}
+							<th scope="col" style="padding:1rem;">@localizer["Manage"]</th>
+
 						</tr>
 					</thead>
 					<tbody>
@@ -53,14 +78,12 @@
 								<tr class="border">
 									<th style="padding:1rem;">@b.Name</th>
 									<td style="padding:1rem;">@b.Phone</td>
-									<td style="padding:1rem;">@(b.Manager != null ? @b.Manager.FirstName : "Not Assigned")</td>
-									<td style="padding:1rem;">@(b.IsActive ? "Active" : "Deactive")</td>
-									@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
-									{
-										<td @@click="active_tab = 2" style="padding:1rem;">
-											<a data-bId="@b.Id" style="border-radius: 4px;" class="bg_primary text-white nav-item text-center p-2 manageBranch">@localizer["Manage"]</a>
-										</td>
-									}
+									<td style="padding:1rem;">@(b.Manager != null ? (@b.Manager.FirstName + " " + @b.Manager.LastName) : "Not Assigned")</td>
+									<td style="padding:1rem;">@(b.IsActive ? "Active" : "Disabled")</td>
+									<td @@click="active_tab = 2" style="padding:1rem;">
+										<a data-bId="@b.Id" style="border-radius: 4px;" class="bg_primary text-white nav-item text-center p-2 manageBranch">@localizer["Manage"]</a>
+									</td>
+
 								</tr>
 							}
 						}
@@ -70,76 +93,76 @@
 
 			<div class="py-4" x-show="active_tab == 3">
 				<div class="col-lg-8 mx-auto py-4">
-					<div asp-validation-summary="All" class="text-danger"></div>
+					@*<div asp-validation-summary="All" class="text-danger"></div>*@
 
-					<form asp-action="AddUpdateBranch" asp-controller="Branches" asp-area="BackOffice" method="post">
+					<form asp-action="AddUpdateBranch" asp-controller="Branches" asp-area="BackOffice" method="post" onsubmit="theButton.disabled = true; return true;">
 						<input type="hidden" asp-for="Branch.Id" />
 						<div class="row">
 							<div class="d-flex flex-column col-6 fs-4">
-								<label for="first_name">Name</label>
+								<label for="first_name">@localizer["Name"]</label>
 								<input asp-for="Branch.Name" class="text__input mt-1" placeholder="">
 								<span asp-validation-for="Branch.Name" class="text-danger"></span>
 
 							</div>
 							<div class="d-flex flex-column col-6 fs-4">
-								<label for="first_name">Manager</label>
+								<label for="first_name">@localizer["Name"]</label>
 								<select class="text__input mt-1" asp-for="SelectedManager" asp-items="@Model.Managers" class="form-select">
 								</select>
 							</div>
 
 							<div class="d-flex flex-column col-6 fs-4 mt-4">
-								<label for="first_name">Email</label>
+								<label for="first_name">@localizer["Email"]</label>
 								<input type="email" asp-for="Branch.Email" class="text__input mt-1" placeholder="">
 								<span asp-validation-for="Branch.Email" class="text-danger"></span>
 
 							</div>
 							<div class="d-flex flex-column col-6 fs-4 mt-4">
-								<label for="first_name">Phone number</label>
+								<label for="first_name">@localizer["Phone number"]</label>
 								<input asp-for="Branch.Phone" class="text__input mt-1" placeholder="">
 								<span asp-validation-for="Branch.Phone" class="text-danger"></span>
 
 							</div>
 
 							<div class="d-flex flex-column col-12 fs-4 mt-4">
-								<label for="first_name">Address</label>
-								<input asp-for="Branch.AddressLine1" class="text__input mt-1" placeholder="Street Address">
+								<label for="first_name">@localizer["Address"]</label>
+								<input asp-for="Branch.AddressLine1" class="text__input mt-1" placeholder="@localizer["Street Address"]">
 								<span asp-validation-for="Branch.AddressLine1" class="text-danger"></span>
 
 							</div>
 
 							<div class="d-flex flex-column col-12 fs-4">
-								<input asp-for="Branch.AddressLine2" class="text__input" placeholder="Street Address Line 2">
+								<input asp-for="Branch.AddressLine2" class="text__input" placeholder="@localizer["Street Address Line 2"]">
 								<span asp-validation-for="Branch.AddressLine2" class="text-danger"></span>
 							</div>
 
 							<div class="d-flex flex-column col-6 fs-4">
-								<input asp-for="Branch.City" class="text__input" placeholder="City">
+								<input asp-for="Branch.City" class="text__input" placeholder="@localizer["City"]">
 								<span asp-validation-for="Branch.City" class="text-danger"></span>
 							</div>
 
 							<div class="d-flex flex-column col-6 fs-4">
-								<input asp-for="Branch.Region" class="text__input" placeholder="Region">
+								<input asp-for="Branch.Region" class="text__input" placeholder="@localizer["State/Province"]">
 								<span asp-validation-for="Branch.Region" class="text-danger"></span>
 							</div>
 
 							<div class="d-flex flex-column col-6 fs-4">
-								<input asp-for="Branch.Country" class="text__input" placeholder="Country">
+								<input asp-for="Branch.Country" class="text__input" placeholder="@localizer["Country"]">
 								<span asp-validation-for="Branch.Country" class="text-danger"></span>
 							</div>
 							<div class="d-flex align-items-center col-6 fs-4">
 								<label class="form-check-label" style="margin-right: 1rem;" for="flexCheckDefault">
-									Active
+									@localizer["Active"]
 								</label>
 								<input class="form-check-input" type="checkbox" asp-for="Branch.IsActive" />
 							</div>
 							<div class="mt-5 text-end">
-								<button type="submit" class="btn_outline fs-5 fw-600"
+								<button @@click="active_tab = 1" type="button" class="btn_outline fs-5 fw-600"
 										style="margin-right: 1rem;">
-									Cancel
+									@localizer["Cancel"]
 								</button>
-								<button type="submit"
+								<button type="submit" id="submitButton"
 										class="btn_solid fs-5 fw-600 bg_primary_hover text-white">
-									Add
+									@localizer["Add"]
 								</button>
 							</div>
 						</div>
@@ -155,7 +178,24 @@
 
 @section Scripts{
 	<script>
-		$(".manageBranch").click(function () {
+		$(document).ready(function () {
+			filterme();
+		});
+
+		var otable = $('#tableBranches').dataTable();
+
+		function filterme() {
+			//use radio values
+			var frees = $('input:radio[name="free"]:checked')[0].value;
+			//now filter in column 2, with no regex, no smart filtering, no inputbox,not case sensitive
+			otable.fnFilter(frees, 3, false, false, false, false);
+		}
+
+		$('form').submit(function () {
+			$(this).find("button[type='submit']").prop('disabled', true);
+		});
+
+		$('#tableBranches tbody').on('click', '.manageBranch', function () {
 			var bId = $(this).attr("data-bId");
 			LoadBranchDetails(bId);
 		})

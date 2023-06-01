@@ -12,7 +12,11 @@ namespace BankingApp.Models
         public ApplicationUser? Customer { get; set; }
         [Required]
         public string? Subject { get; set; }
-        public DateTime CreatedDate { get; set;} = DateTime.Now;
+		[Required]
+		public string? Area { get; set; }
+        public bool IsActive { get; set; } = true;
+		public DateTime CreatedDate { get; set;} = DateTime.Now;
+		public ApplicationUser? CreatedBy { get; set;}
 
     }
 }

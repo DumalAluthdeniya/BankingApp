@@ -1,0 +1,329 @@
+﻿@using BankingApp.Areas.BackOffice;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@using BankingApp.Data;
+@inject ISharedViewLocalizer localizer
+@model IEnumerable<SupportItem>
+
+@{
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
+<input type="hidden" asp-for="@Model.FirstOrDefault().Support.IsActive">
+<div id="myDiv" class="px-2 py-4" style="overflow-y: auto;height: 70vh;">
+	<div class="px-3">
+		<div>
+			<p class="fs-4 fw-600">@localizer["Ticket"] - @Model.FirstOrDefault().Support.Ticket : @Model.FirstOrDefault().Support.Subject</p>
+		</div>
+		<div>
+			@foreach (var i in Model.OrderBy(f => f.SendDate))
+			{
+				<div>
+					<div class="d-flex gap-2 align-items-center">
+						<svg width="35" height="35" viewBox="0 0 35 35" fill="none"
+						 xmlns="http://www.w3.org/2000/svg">
+							<path d="M30.9584 28.6623C32.7548 26.5026 34.0042 23.9425 34.601 21.1983C35.1977 18.4541 35.1242 15.6067 34.3867 12.897C33.6491 10.1872 32.2692 7.69479 30.3638 5.63057C28.4583 3.56635 26.0832 1.99105 23.4396 1.03794C20.7959 0.0848302 17.9614 -0.218057 15.1758 0.154904C12.3902 0.527864 9.73548 1.5657 7.43621 3.18061C5.13694 4.79553 3.26076 6.94001 1.9664 9.43266C0.672027 11.9253 -0.00245499 14.6928 6.71435e-06 17.501C0.000951356 21.5833 1.44072 25.5348 4.06666 28.6623L4.04164 28.6835C4.12921 28.7885 4.22928 28.8785 4.31934 28.9822C4.43192 29.111 4.55326 29.2322 4.66959 29.3572C5.01984 29.7372 5.3801 30.1021 5.75787 30.4446C5.87295 30.5496 5.99179 30.6471 6.10812 30.7471C6.50841 31.092 6.91995 31.4195 7.3465 31.7244C7.40154 31.7619 7.45158 31.8107 7.50662 31.8494V31.8344C10.4363 33.8944 13.9313 35 17.5138 35C21.0962 35 24.5912 33.8944 27.5209 31.8344V31.8494C27.576 31.8107 27.6247 31.7619 27.681 31.7244C28.1063 31.4182 28.5191 31.092 28.9194 30.7471C29.0357 30.6471 29.1546 30.5483 29.2697 30.4446C29.6474 30.1009 30.0077 29.7372 30.3579 29.3572C30.4743 29.2322 30.5944 29.111 30.7082 28.9822C30.797 28.8785 30.8983 28.7885 30.9859 28.6823L30.9584 28.6623ZM17.5125 7.50202C18.6258 7.50202 19.7141 7.83189 20.6398 8.44991C21.5655 9.06792 22.287 9.94633 22.7131 10.9741C23.1391 12.0018 23.2506 13.1327 23.0334 14.2237C22.8162 15.3147 22.2801 16.3169 21.4928 17.1035C20.7056 17.8901 19.7026 18.4257 18.6107 18.6428C17.5188 18.8598 16.387 18.7484 15.3584 18.3227C14.3298 17.897 13.4507 17.1761 12.8322 16.2512C12.2136 15.3262 11.8835 14.2388 11.8835 13.1264C11.8835 11.6347 12.4766 10.2042 13.5322 9.14937C14.5878 8.09459 16.0196 7.50202 17.5125 7.50202ZM7.51412 28.6623C7.53582 27.0212 8.2033 25.4546 9.37215 24.3014C10.541 23.1483 12.1172 22.5013 13.7598 22.5004H21.2652C22.9078 22.5013 24.484 23.1483 25.6529 24.3014C26.8217 25.4546 27.4892 27.0212 27.5109 28.6623C24.7675 31.1324 21.2055 32.4995 17.5125 32.4995C13.8196 32.4995 10.2575 31.1324 7.51412 28.6623Z"
+							  fill="#2F80ED" />
+						</svg>
+						<div>
+							<div class="d-flex gap-2">
+								<p class="m-0 fw-700">@i.Sender.FirstName @i.Sender.LastName</p>
+								<span class="fs-6 text_gray_dark">&lt;@i.Sender.Email&gt;</span>
+							</div>
+							<p class="text_gray_dark m-0 fs-6">@i.SendDate</p>
+						</div>
+					</div>
+					<div class="bg_light_blue chat_item_radius text-white col-lg-6 my-4 position-relative">
+						<p class="fw-500 fs-6">@Html.Raw(i.Message.Replace(System.Environment.NewLine, "<br />"));</p>
+						@if (i.Files.Any())
+						{
+							<small>@localizer["Attachments"]:</small>
+							<ul>
+								@foreach (var f in i.Files)
+								{
+									var paths = "/StaticFiles/SupportFiles/" + f.Path;
+									<li>
+										<a target="_blank" href="@paths" style="text-decoration:underline">@f.Path</a>
+									</li>
+								}
+							</ul>
+
+						}
+
+					</div>
+				</div>
+
+				<hr class="my-1">
+			}
+		</div>
+		<div>
+			@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Support")).PermissionType == PermissionType.Update)
+			{
+				<div id="closeMessage">
+					<a data-tid="@Model.FirstOrDefault().Support.Id" class="btn btn-danger btnCloseTicket">
+						<span>
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+								<path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z" />
+							</svg>
+						</span>
+						@localizer["Close this ticket"]
+					</a>
+				</div>
+			}
+			<div id="activeMessage">
+				@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Support")).PermissionType == PermissionType.Update)
+				{
+
+					<a data-tid="@Model.FirstOrDefault().Support.Id" class="btn btn-warning btnCloseTicket">
+						<span>
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+								<path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z" />
+							</svg>
+						</span>
+						@localizer["Open this ticket"]
+					</a>
+				}
+				<div class="alert alert-danger mt-1" role="alert">
+					@localizer["This ticket is closed !!!"]
+				</div>
+			</div>
+			@*}*@
+		</div>
+		@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Support")).PermissionType == PermissionType.Update)
+		{
+			<div id="divSendMessage" class="d-flex align-items-center justify-content-between col-lg-10 p-3 bg_blue_lite" style="border-radius: 8px;position: fixed;bottom: 1rem;width: 80%;transform: translateX(-50%);left: 58%;">
+				<div class="d-flex align-items-center col-lg-11 gap-2">
+					<input class="file-upload" type="file" style="display:none" multiple />
+					<div class="nav-item upload-button">
+						<svg width="48" height="48" viewBox="0 0 48 47" fill="none"
+						 xmlns="http://www.w3.org/2000/svg">
+							<circle cx="24.0711" cy="23.2254" r="23.2254" fill="#1573FF" />
+							<g filter="url(#filter0_dd_344_80)">
+								<rect width="27.8704" height="27.8704" transform="translate(10.1367 9.29007)"
+								  fill="#1573FF" />
+								<path fill-rule="evenodd" clip-rule="evenodd"
+								  d="M32.2003 22.0641H25.2327V15.0964C25.2327 14.4543 24.7124 13.9352 24.0714 13.9352C23.4304 13.9352 22.9101 14.4543 22.9101 15.0964V22.0641H15.9425C15.3015 22.0641 14.7812 22.5831 14.7812 23.2253C14.7812 23.8675 15.3015 24.3866 15.9425 24.3866H22.9101V31.3542C22.9101 31.9964 23.4304 32.5155 24.0714 32.5155C24.7124 32.5155 25.2327 31.9964 25.2327 31.3542V24.3866H32.2003C32.8413 24.3866 33.3615 23.8675 33.3615 23.2253C33.3615 22.5831 32.8413 22.0641 32.2003 22.0641Z"
+								  fill="#231F20" />
+								<mask id="mask0_344_80" style="mask-type:luminance" maskUnits="userSpaceOnUse"
+								  x="14" y="13" width="20" height="20">
+									<path fill-rule="evenodd" clip-rule="evenodd"
+									  d="M32.2003 22.0641H25.2327V15.0964C25.2327 14.4543 24.7124 13.9352 24.0714 13.9352C23.4304 13.9352 22.9101 14.4543 22.9101 15.0964V22.0641H15.9425C15.3015 22.0641 14.7812 22.5831 14.7812 23.2253C14.7812 23.8675 15.3015 24.3866 15.9425 24.3866H22.9101V31.3542C22.9101 31.9964 23.4304 32.5155 24.0714 32.5155C24.7124 32.5155 25.2327 31.9964 25.2327 31.3542V24.3866H32.2003C32.8413 24.3866 33.3615 23.8675 33.3615 23.2253C33.3615 22.5831 32.8413 22.0641 32.2003 22.0641Z"
+									  fill="white" />
+								</mask>
+								<g mask="url(#mask0_344_80)">
+									<g filter="url(#filter1_dd_344_80)">
+										<rect x="10.1367" y="9.29007" width="27.8704" height="27.8704"
+										  fill="white" />
+									</g>
+								</g>
+							</g>
+							<defs>
+								<filter id="filter0_dd_344_80" x="8.13672" y="8.29007" width="31.8711"
+									height="31.8704" filterUnits="userSpaceOnUse"
+									color-interpolation-filters="sRGB">
+									<feFlood flood-opacity="0" result="BackgroundImageFix" />
+									<feColorMatrix in="SourceAlpha" type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+									<feOffset dy="1" />
+									<feGaussianBlur stdDeviation="0.5" />
+									<feColorMatrix type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0" />
+									<feBlend mode="normal" in2="BackgroundImageFix"
+										 result="effect1_dropShadow_344_80" />
+									<feColorMatrix in="SourceAlpha" type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+									<feOffset dy="1" />
+									<feGaussianBlur stdDeviation="1" />
+									<feColorMatrix type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0" />
+									<feBlend mode="normal" in2="effect1_dropShadow_344_80"
+										 result="effect2_dropShadow_344_80" />
+									<feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_344_80"
+										 result="shape" />
+								</filter>
+								<filter id="filter1_dd_344_80" x="8.13672" y="8.29007" width="31.8711"
+									height="31.8704" filterUnits="userSpaceOnUse"
+									color-interpolation-filters="sRGB">
+									<feFlood flood-opacity="0" result="BackgroundImageFix" />
+									<feColorMatrix in="SourceAlpha" type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+									<feOffset dy="1" />
+									<feGaussianBlur stdDeviation="0.5" />
+									<feColorMatrix type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0" />
+									<feBlend mode="normal" in2="BackgroundImageFix"
+										 result="effect1_dropShadow_344_80" />
+									<feColorMatrix in="SourceAlpha" type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+									<feOffset dy="1" />
+									<feGaussianBlur stdDeviation="1" />
+									<feColorMatrix type="matrix"
+											   values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0" />
+									<feBlend mode="normal" in2="effect1_dropShadow_344_80"
+										 result="effect2_dropShadow_344_80" />
+									<feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_344_80"
+										 result="shape" />
+								</filter>
+							</defs>
+						</svg>
+					</div>
+					<textarea required id="message" type="text" class="w-100 input-none p-2" placeholder="@localizer["Type a message here"]"></textarea>
+				</div>
+
+				<div class="nav-item col-lg-1" style="text-align: end;">
+					<a id="btnReply" data-sId="@Model.FirstOrDefault().Support.Id">
+						<svg width="48" height="48" viewBox="0 0 53 53" fill="none"
+						 xmlns="http://www.w3.org/2000/svg">
+							<circle cx="26.5" cy="26.5" r="26.5" fill="#1573FF" />
+							<rect width="27.3239" height="27.3239" transform="translate(13.084 12.4929)"
+							  fill="#1573FF" />
+							<mask id="mask0_344_66" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="15"
+							  y="17" width="21" height="21">
+								<path fill-rule="evenodd" clip-rule="evenodd"
+								  d="M28.644 37.5398C28.62 37.5398 28.5973 37.5387 28.5745 37.5376C28.0599 37.5068 27.6307 37.1334 27.5282 36.6279L25.7772 28.0129C25.6861 27.5643 25.3366 27.2148 24.8881 27.1237L16.273 25.3716C15.7675 25.2702 15.3941 24.841 15.3634 24.3264C15.3326 23.8107 15.6503 23.3394 16.1398 23.1777L34.3558 17.1061C34.7645 16.9672 35.2154 17.0742 35.5205 17.3805C35.8256 17.6856 35.9315 18.1364 35.796 18.5451L29.7233 36.7611C29.5684 37.229 29.1312 37.5398 28.644 37.5398"
+								  fill="white" />
+							</mask>
+							<g mask="url(#mask0_344_66)">
+								<rect x="13.084" y="12.4929" width="27.3239" height="27.3239" fill="white" />
+							</g>
+						</svg>
+					</a>
+					<p style="margin:0" id="lblFiles"></p>
+
+				</div>
+
+			</div>
+		}
+
+
+	</div>
+</div>
+<script>
+	var formData = new FormData();
+
+	$(document).ready(function () {
+
+		var isActive = $("#Support_IsActive").val();
+		if (isActive == "True") {
+			$("#activeMessage").hide();
+			$("#closeMessage").show();
+		}
+
+		else {
+			$("#closeMessage").hide();
+			$("#activeMessage").show();
+			$("#divSendMessage").css("visibility", "hidden");
+
+
+		}
+
+
+		var objDiv = document.getElementById("myDiv");
+		objDiv.scrollTop = objDiv.scrollHeight;
+
+		var readURL = function (input) {
+			if (input.files && input.files[0])
+				for (var i = 0; i < input.files.length; i++) {
+					formData.append("files", input.files[i]);
+				}
+		}
+
+		$(".file-upload").on('change', function () {
+			readURL(this);
+			//console.log(formData.getAll("files"));
+			$("#lblFiles").text(formData.getAll("files").length + " file(s) attached.")
+
+		});
+
+		$(".upload-button").on('click', function () {
+			$(".file-upload").click();
+		});
+	});
+
+	$('#message').validate({ // initialize the plugin
+		errorClass: "my-error-class",
+		rules: {
+			'Exchange.Name': {
+				required: true
+			},
+			'Exchange.Symbol': {
+				required: true,
+			},
+			'Exchange.MarketRate': {
+				required: true,
+				maxlength: 25
+			}
+		}
+	});
+
+
+	$("#btnReply").click(function () {
+		var message = $("#message").val();
+		if (message != "") {
+			var sId = $(this).attr('data-sId');
+			formData.append('message', message);
+			formData.append('sId', sId);
+
+			$.ajax({
+				type: "POST",
+				async: true,
+				cache: false,
+				contentType: false,
+				processData: false,
+				url: '/BackOffice/Support/Reply',
+				data: formData,
+				success: function (data) {
+					$('#ticketDetail').html(data);
+				},
+				error: function (error) {
+					toastr.error('Error occured. Please try again later.');
+				}
+			});
+		}
+		else {
+			//$("#message").after("Please enter a message.")
+			$("#message").css("border", "1px solid red");
+
+			$("#message").attr("placeholder", "Please enter a message.");
+		}
+	});
+
+	$("#message").focus(function () {
+		$("#message").css("border", "");
+		$("#message").attr("placeholder", "Type a message here.");
+	});
+
+	$(".btnCloseTicket").click(function () {
+		var tId = $(this).attr("data-tid");
+		$.ajax({
+			type: "POST",
+			url: '/BackOffice/Support/CloseTicket',
+			data: { "tId": tId },
+			success: function (data) {
+				if (data) {
+					$("#activeMessage").hide();
+					$("#closeMessage").show();
+					$("#divSendMessage").css("visibility", "visible");
+					toastr.info("Ticket succusfully opened");
+				}
+
+				else {
+					$("#closeMessage").hide();
+					$("#activeMessage").show();
+					$("#divSendMessage").css("visibility", "hidden");
+					toastr.info("Ticket succusfully closed");
+					var objDiv = document.getElementById("myDiv");
+					objDiv.scrollTop = objDiv.scrollHeight;
+
+
+				}
+
+			},
+			error: function (error) {
+				toastr.error('Error occured. Please try again later.');
+			}
+		});
+	});
+</script>

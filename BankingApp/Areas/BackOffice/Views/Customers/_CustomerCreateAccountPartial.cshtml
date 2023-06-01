@@ -1,6 +1,9 @@
 ﻿@model ManageCustomersViewModel
+@inject ISharedViewLocalizer localizer
 
-<p>Creating account  for : @Model.Account.Customer.FirstName @Model.Account.Customer.LastName </p>
+<p>@localizer["Creating account  for : "] @Model.Account.Customer.FirstName @Model.Account.Customer.LastName </p>
+<div><a id="btnViewAccounts" data-cId="@Model.Account.CustomerId" class="btn btn-secondary mb-2" @@click="active_tab = 4">Back to All Accounts </a></div>
+
 <form asp-action="AddUpdateAccount" asp-controller="Customers" asp-area="BackOffice" method="post">
 	<div asp-validation-summary="All" class="text-danger"></div>
 	<input type="hidden" asp-for="Account.Customer.Id" />
@@ -9,37 +12,39 @@
 			<div class="col-lg-12">
 				<div class="row py-4">
 					<div class="d-flex flex-column mt-2 col-5 fs-4">
-						<label for="customer_name">Account Type</label>
-						<select class="text__input mt-1" asp-for="Account.AccountType" asp-items="Html.GetEnumSelectList<AccountType>()" class="form-select">
+						<label for="customer_name">@localizer["Account Type"]</label>
+						<select class="text__input mt-1" asp-for="Account.AccountType" asp-items="Html.GetEnumSelectList<AccountType>().Where(t => Convert.ToInt32(t.Value) <=2)" class="form-select">
 						</select>
 
 					</div>
-					<div class="d-flex flex-column mt-2 col-5 offset-1 fs-4">
-						<label for="phone_number">Account Number</label>
-						<input asp-for="Account.AccountNo" class="text__input mt-1" placeholder="">
-						<span asp-validation-for="Account.AccountNo" class="text-danger"></span>
-					</div>
-					<div class="d-flex flex-column col-5 fs-4 mt-4">
-						<label for="email">Balance</label>
-						<input asp-for="Account.Balance" class="text__input mt-1" placeholder="">
+					@*<div class="d-flex flex-column mt-2 col-5 offset-1 fs-4">
+					<label for="phone_number">@localizer["Account Number"]</label>
+					<input asp-for="Account.AccountNo" class="text__input mt-1" readonly style="background-color:lightgray;">
+					<span asp-validation-for="Account.AccountNo" class="text-danger"></span>
+					</div>*@
+					<input type="hidden" asp-for="Account.AccountNo" class="text__input mt-1" readonly style="background-color:lightgray;">
+
+					<div class="d-flex flex-column col-5 fs-4 mt-1">
+						<label for="email">@localizer["Balance"]</label>
+						<input asp-for="Account.Balance" class="text__input mt-1" placeholder="" readonly style="background-color:lightgray;">
 						<span asp-validation-for="Account.Balance" class="text-danger"></span>
 					</div>
 					<div class="d-flex align-items-center col-5 fs-4 mt-4">
 						<input asp-for="Account.IsActive" class="form-check-input m-0" type="checkbox">
 						<label class="form-check-label" style="margin-left: 1rem;" for="flexCheckDefault">
-							Active
+							@localizer["Active"]
 						</label>
 					</div>
 				</div>
 			</div>
 
 			<div class="mt-5 text-end">
-				<button type="button" class="btn_outline fs-5 fw-600"
+				<button @@click="active_tab = 4" type="button" class="btn_outline fs-5 fw-600"
 						style="margin-right: 1rem;">
-					Cancel
+					@localizer["Cancel"]
 				</button>
 				<button id="btnAdd" type="submit" class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">
-					Add
+					@localizer["Add"]
 				</button>
 			</div>
 		</div>
@@ -48,18 +53,24 @@
 
 <script>
 
-	//$('#btnAdd').prop('disabled', true);
-	//$('#Account_AccountNo').keyup(function () {
-	//	console.log($(this).val())
-	//	if ($(this).val() != '')
-	//		$('#btnAdd').prop('disabled', false);
-	//	else if ($(this).val() > 0)
-	//		$('#btnAdd').prop('disabled', false);
-	//	else{
-	//		$('#btnAdd').prop('disabled', true);
-	//		$(this).val($(this).val());
-	//	}
-	//});
+	$("#btnViewAccounts").click(function () {
+		var aId = $(this).attr("data-cId");
+		LoadAccounts(aId);
+	})
+
+	function LoadAccounts(cId) {
+		$.ajax({
+			type: "GET",
+			async: true,
+			url: '/BackOffice/Customers/LoadAccounts',
+			data: { "customerId": cId },
+			success: function (data) {
+				$('#accounts').html(data);
+			},
+			error: function (error) {
+				alert('Error occured. Please try again later.');
+			}
+		});
 
 
 

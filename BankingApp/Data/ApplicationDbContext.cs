@@ -17,19 +17,25 @@ namespace BankingApp.Data
         public DbSet<Branch> Branches { get; set; }
         public DbSet<EmployeePermission> EmployeePermissions { get; set; }
         public DbSet<Exchange> Exchanges { get; set; }
+        public DbSet<ExchangeHistory> ExchangeHistory { get; set; }
         public DbSet<Loan> Loans { get; set; }
+        public DbSet<LoanItem> LoanItems { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Support> Supports { get; set; }
         public DbSet<SupportItem> SupportItems { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Setting> Settings { get; set; }
+        public DbSet<SupportFile> SupportFiles { get; set; }
+		public DbSet<CustomerContact> Contacts { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 			new DbInitializer(modelBuilder).Seed();
 
         }
 
-    }
+    }     
 }

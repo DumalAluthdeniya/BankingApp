@@ -2,57 +2,44 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Net.Mail;
 
-namespace SGP.Utils
+namespace BankingApp.Utils
 {
 	public class EmailSender : IEmailSender
 	{
-		private readonly IConfiguration _configuration;
-		public EmailSender(IConfiguration configuration)
+		private readonly string _server;
+		private readonly string _user;
+		private readonly string _pass;
+
+		public EmailSender(string smptServer, string smtpUser, string smptPassword)
 		{
-			_configuration = configuration;
+			_server = smptServer;
+			_user = smtpUser;
+			_pass = smptPassword;
 		}
 
 		public Task SendEmailAsync(string email, string subject, string message)
 		{
 			MailMessage m = new MailMessage();
 			SmtpClient sc = new SmtpClient();
-			m.From = new MailAddress(_configuration.GetValue<string>("SMTPUser"));
+			m.From = new MailAddress(_user);
 			m.To.Add(email);
 			m.Subject = subject;
 			m.IsBodyHtml = true;
 			m.Body = message;
-			sc.Host = _configuration.GetValue<string>("SMTPServer");
-			string str1 = "gmail.com";
-			string str2 = _configuration.GetValue<string>("SMTPUser").ToLower();
-			if (str2.Contains(str1))
+			sc.Host = _server;
+			try
 			{
-				try
-				{
-					sc.Port = 587;
-					sc.Credentials = new System.Net.NetworkCredential(_configuration.GetValue<string>("SMTPUser"), _configuration.GetValue<string>("SMTPPassword"));
-					sc.EnableSsl = true;
-					return sc.SendMailAsync(m);
+				sc.Port = 587;
+				sc.Credentials = new System.Net.NetworkCredential(_user, _pass);
+				sc.EnableSsl = true;
+				return sc.SendMailAsync(m);
 
-				}
-				catch (Exception e1)
-				{
-					throw new Exception(e1.Message);
-				}
 			}
-			else
+			catch (Exception e1)
 			{
-				try
-				{
-					sc.Port = 25;
-					sc.Credentials = new System.Net.NetworkCredential(_configuration.GetValue<string>("SMTPUser"), _configuration.GetValue<string>("SMTPPassword"));
-					sc.EnableSsl = false;
-					return sc.SendMailAsync(m);
-				}
-				catch (Exception e2)
-				{
-					throw new Exception(e2.Message);
-				}
+				throw new Exception(e1.Message);
 			}
+
 		}
 	}
 }

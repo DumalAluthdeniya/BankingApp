@@ -1,0 +1,60 @@
+
+	
+//////New Models 1-03-2023
+
+//Gallary For MultiImages Allow Only 6 Images Max of One Properties
+
+ public class Gallary
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required] //// ForgenKey of PropertyTypeId
+        public int PropertyId { get; set; } 
+		[Required]
+        public string ImagePathUrl { get; set; }
+		
+    }
+
+public class ExtraFeatureValue
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]//Forgenkey Relation of ExtraFeature
+        public int FeatureId { get; set; }  //ID 3 FOR Beds
+		[Required]
+        public string FeatureValue { get; set; } // value no of beds : 3
+        [Required] // ForgenKey of ServiceType
+        public int ServiceTypeId { get; set; }
+        [Required] // ForgenKey of PropertyTypeId
+        public int PropertyTypeId { get; set; }
+    }
+	
+public class BookingNotifications
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public string Email { get; set; }
+		[Required]
+        public string Phone { get; set; }
+        [Required] e
+        public int Discription { get; set; }
+        [Required] 
+        public bool InterestStatus{ get; set; }
+		[Required]// ForgenKey of PropertyTypeId
+		public int PropertyId { get; set; } 
+		[DataType(DataType.Date)]
+        public DateTime AddedDate { get; set; }
+		
+    }
+	
+//New Pages 01-03-2023
+1: property-details.html
+2: property-list.html
+3:dashboard-edit-property.html
+4:dashboard-my-property.html
+5: dashboard-property-features.html
+6: dashboard-property-preview.html
+//New Master Pages
+1: master-dashboard.html
+2: master-side-filter.html

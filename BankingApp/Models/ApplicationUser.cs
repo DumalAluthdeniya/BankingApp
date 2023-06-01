@@ -7,6 +7,7 @@ namespace BankingApp.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        public long CustomerUniqueId { get; set; }
         [Required]
         public string? FirstName { get; set; } = string.Empty;
         [Required]
@@ -23,15 +24,21 @@ namespace BankingApp.Models
         [Required]
         public string? Country { get; set; } = string.Empty;
         public string? ProfileImage { get; set; } = string.Empty;
+
         [Required]
-        public decimal LoanBalance { get; set; } = decimal.Zero;
+		[Column(TypeName = "decimal(10, 2)")]
+		public decimal LoanBalance { get; set; } = decimal.Zero;
+
         [Required]
-        public decimal AccountBalance { get; set; } = decimal.Zero;
+		[Column(TypeName = "decimal(10, 2)")]
+		public decimal AccountBalance { get; set; } = decimal.Zero;
         public bool IsActive { get; set; } = true;
         public string? DefaultPassword { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 		public DateTime UpdatedDate { get; set; }
 		public virtual IEnumerable<EmployeePermission>? EmployeePermissions { get; set; }
 		public virtual IEnumerable<Account>? Accounts { get; set; }
+        [NotMapped]
+		public virtual IEnumerable<Loan>? Loans { get; set; }
     }
 }

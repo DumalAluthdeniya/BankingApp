@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BankingApp.Models
 {
-    public class EmployeePermission
+	public class EmployeePermission
     {
         [Key]
         public int Id { get; set; }

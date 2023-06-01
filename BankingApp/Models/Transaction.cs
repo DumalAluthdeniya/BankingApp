@@ -18,6 +18,8 @@ namespace BankingApp.Models
 		public decimal Amount { get; set; }
 		public string? Description { get; set; }
 		public string? Reference { get; set; }
+		[Column(TypeName = "decimal(10, 2)")]
+		public decimal Balance { get; set; }
 		public int DestinationAccountId { get; set; }
 		[ForeignKey("DestinationAccountId")]
 		public Account? DestinationAccount { get; set; }

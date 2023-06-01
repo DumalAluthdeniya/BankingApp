@@ -11,7 +11,9 @@ namespace BankingApp.Models
 		public string CustomerId { get; set; }
 		public ApplicationUser? Customer { get; set; }
 		[Required]
-		public int AccountNo { get; set; }
+		public long AccountNo { get; set; }
+
+		[Column(TypeName = "decimal(10, 2)")]
 		public decimal Balance { get; set; }
 		public DateTime CreatedDate { get; set; } = DateTime.Now;
 		public string? CreatedBy { get; set; }

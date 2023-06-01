@@ -19,5 +19,6 @@ namespace BankingApp.Areas.BackOffice.Models
 		public IEnumerable<Loan>? Loans { get; set; }
 		public AccountType SelectedAccType { get; set; }
 		public int ActiveTab { get; set; } = 1;
+		public long DestinationAccountNo { get; set; } = 1;
 	}
 }

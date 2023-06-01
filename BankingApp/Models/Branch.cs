@@ -1,10 +1,8 @@
-﻿using MessagePack;
-using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BankingApp.Models
 {
-    public class Branch
+	public class Branch
     {
         [System.ComponentModel.DataAnnotations.Key]
         public int Id { get; set; }

@@ -1,41 +1,170 @@
 ﻿@model ManageCustomersViewModel
+@using BankingApp.Areas.BackOffice;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@using BankingApp.Data;
+@inject ISharedViewLocalizer localizer
 
-<p>Accounts of : @Model.Customer.FirstName @Model.Customer.LastName</p>
 
-<div><button id="AddAccount" data-cId="@Model.Customer.Id" class="btn btn-primary mb-2" @@click="active_tab = 6">+Create Account</button></div>
-<table class="table">
+@{
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
+
+<p>@localizer["Accounts of"] : @Model.Customer.FirstName @Model.Customer.LastName</p>
+
+<div>
+	@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Customers")).PermissionType == PermissionType.Update)
+	{
+		<a id="AddAccount" data-cId="@Model.Customer.Id" class="btn btn-primary mb-2" @@click="active_tab = 6">@localizer["+Create Account"]</a>
+	}
+	<a data-cId="@Model.Customer.Id" class="btn btn-secondary mb-2 manageCustomer" @@click="active_tab = 2">@localizer["Customer Details"]</a>
+</div>
+
+
+@*<div class="row">
+	<p class="col-2">Filter by status: </p>
+	<div class="col-4">
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Active" checked />
+			<label class="form-check-label" for="free">Active</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Inactive" />
+			<label class="form-check-label" for="free">Inactive</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="" />
+			<label class="form-check-label" for="free">All</label>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<p class="col-2">Filter by type: </p>
+	<div class="col-4">
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme1()" type="radio" name="free1" value="" checked>
+			<label class="form-check-label" for="free">All</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme1()" type="radio" name="free1" value="Savings">
+			<label class="form-check-label" for="free">Savings</label>
+		</div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" onchange="filterme1()" type="radio" name="free1" value="Spending">
+			<label class="form-check-label" for="free">Spending</label>
+		</div>
+
+	</div>
+</div>*@
+<table id="tblCustomerAccounts" class="table table1">
 	<thead class="thead-dark">
 		<tr class="bg_primary text-white border">
-			<th scope="col" style="padding:1rem;">Account Type</th>
-			<th scope="col" style="padding:1rem;">Account No</th>
-			<th scope="col" style="padding:1rem;">Account Balance</th>
-			<th scope="col" style="padding:1rem;">Created Date</th>
-			<th scope="col" style="padding:1rem;">Manage</th>
+			<th scope="col" style="padding:1rem;">@localizer["Account Type"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Account No"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Account Balance"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Created Date"]</th>
+			<th scope="col" style="padding:1rem;" class="text-center">@localizer["Status"]</th>
+			<th scope="col" style="padding:1rem;" class="text-center">@localizer["Manage"]</th>
 		</tr>
 	</thead>
 	<tbody>
 		@if (Model.Accounts != null && Model.Accounts.Any())
 		{
-			@foreach (var a in Model.Accounts)
+			foreach (var a in Model.Accounts)
 			{
 				<tr class="border">
 					<th style="padding:1rem;">@a.AccountType</th>
 					<td style="padding:1rem;">@a.AccountNo</td>
-					<td class="secondery__font fw-500" style="padding:1rem;"><b>@a.Balance.ToString("C", CultureInfo.CurrentCulture)</b></td>
+					@if (a.AccountType == AccountType.Loan)
+					{
+						var loan = Model.Loans.FirstOrDefault(l => l.Account == a);
+						if (loan != null)
+						{
+							var paidAmount = loan.Account.Transactions.Sum(t => t.Amount);
+							if (paidAmount > 0)
+							{
+								var noOfInstallmentsPaid = paidAmount / loan.MonthlyPayment;
+								if (noOfInstallmentsPaid > 1)
+								{
+									if (int.TryParse(noOfInstallmentsPaid.ToString(), out int value))
+									{
+										int count = Convert.ToInt32(noOfInstallmentsPaid);
+										var loanItem = loan.LoanItems[count - 1];
+										<td class="secondery__font fw-500" style="padding:1rem;"><b>@loanItem.EndingBalance.ToString("C", CultureInfo.CurrentCulture)</b></td>
+									}
+									else
+									{
+										var count = Convert.ToInt32(Math.Truncate(noOfInstallmentsPaid));
+										var loanItem = loan.LoanItems[count - 1];
+										var expectedPaid = loan.MonthlyPayment * count;
+										var partyPaidAmount = paidAmount - expectedPaid;
+										var outstanding = loanItem.EndingBalance - partyPaidAmount;
+										<td class="secondery__font fw-500" style="padding:1rem;"><b>@outstanding.ToString("C", CultureInfo.CurrentCulture)</b></td>
+									}
+								}
+								else
+								{
+									var outstanding = loan.BankOfferAmount - paidAmount;
+									<td class="secondery__font fw-500" style="padding:1rem;"><b>@outstanding.ToString("C", CultureInfo.CurrentCulture)</b></td>
+								}
+							}
+							else
+							{
+								<td class="secondery__font fw-500" style="padding:1rem;"><b>@loan.BankOfferAmount.ToString("C", CultureInfo.CurrentCulture)</b></td>
+							}
+						}
+						else
+						{
+							var c = 0;
+							<td class="secondery__font fw-500" style="padding:1rem;"><b>@c.ToString("C", CultureInfo.CurrentCulture)</b></td>
+						}
+
+					}
+					else
+					{
+						<td class="secondery__font fw-500" style="padding:1rem;"><b>@a.Balance.ToString("C", CultureInfo.CurrentCulture)</b></td>
+					}
 					<td style="padding:1rem;">@a.CreatedDate.ToString("g",CultureInfo.CurrentCulture)</td>
-					<td style="padding:1rem;"><a data-aId="@a.Id" @@click="active_tab = 5" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 manageAccountDetails">Manage</a></td>
+					<td style="padding:1rem;" class="text-center">
+						@(
+							a.IsActive ? "Active" : "Inactive"
+							)
+					</td>
+					@if (a.AccountType != AccountType.Loan)
+					{
+						<td style="padding:1rem;" class="text-center"><a data-aId="@a.Id" @@click="active_tab = 5" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 manageAccountDetails">@localizer["Manage"]</a></td>
+					}
+					else
+					{
+						<td style="padding:1rem;" class="text-center"><a href="/BackOffice/Loans?fromAcc=true&accNo=@a.AccountNo" data-aId="@a.Id" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2">@localizer["Manage"]</a></td>
+					}
+
 				</tr>
 			}
-
 		}
 	</tbody>
 </table>
+
 <script>
+
+	//var otable = $("#tblCustomerAccounts").dataTable();
+	//function filterme() {
+	//	var frees = $('input:radio[name="free"]:checked')[0].value;
+	//	otable.fnFilter(frees, 4, false, false, false, false);
+	//}
+
+	//function filterme1() {
+	//	var frees = $('input:radio[name="free1"]:checked')[0].value;
+	//	otable.fnFilter(frees, 0, false, false, false, false);
+	//}
 
 	$("#AddAccount").click(function () {
 		var cId = $(this).attr("data-cId");
 		LoadAddAccount(cId);
-	})
+	});
 
 	function LoadAddAccount(cId) {
 		$.ajax({
@@ -47,7 +176,7 @@
 				$('#createAccount').html(data);
 			},
 			error: function (error) {
-				alert('Error occured. Please try again later.');
+				toastr.error('Error occured. Please try again later.');
 			}
 		});
 	}
@@ -67,7 +196,28 @@
 				$('#accountDetails').html(data);
 			},
 			error: function (error) {
-				alert('Error occured. Please try again later.');
+				toastr.error('Error occured. Please try again later.');
+			}
+		});
+	}
+
+
+	$('.manageCustomer').click(function () {
+		var cId = $(this).attr("data-cId");
+		LoadCustomerDetails(cId);
+	});
+
+	function LoadCustomerDetails(cId) {
+		$.ajax({
+			type: "GET",
+			async: true,
+			url: '/BackOffice/Customers/LoadCustomerDetails',
+			data: { "customerId": cId },
+			success: function (data) {
+				$('#customerDetails').html(data);
+			},
+			error: function (error) {
+				toastr.error('Error occured. Please try again later.');
 			}
 		});
 	}

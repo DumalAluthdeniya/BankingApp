@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace BankingApp.Data.Migrations
 {
-    public partial class AddSenderToSuppotItems : Migration
+	public partial class AddSenderToSuppotItems : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

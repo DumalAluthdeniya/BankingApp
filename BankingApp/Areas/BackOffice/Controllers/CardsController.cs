@@ -1,16 +1,10 @@
-﻿using BankingApp.Areas.BackOffice.Models;
-using BankingApp.Controllers;
-using BankingApp.Data;
-using BankingApp.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankingApp.Areas.BackOffice.Controllers
 {
 	[Authorize]
+	[HasPermission("Manage Cards")]
 	[Area("BackOffice")]
 	[Route("BackOffice/[controller]")]
 	public class CardsController : Controller

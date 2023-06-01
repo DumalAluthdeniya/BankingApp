@@ -32,13 +32,25 @@
 
   <ItemGroup>
     <Folder Include="Areas\BackOffice\Data\" />
+    <Folder Include="MyStaticFiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="/BankingApp/wwwroot/ProfilePictures" />
+    <Content Remove="/BankingApp/wwwroot/SupportFiles" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\BackOffice\Views\Customers\_CustomerListPartial.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Resources\SharedResource.es.resx">
+      <SubType>Designer</SubType>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\SharedResource.fr.resx">
+      <SubType>Designer</SubType>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\SharedResource.en.resx">

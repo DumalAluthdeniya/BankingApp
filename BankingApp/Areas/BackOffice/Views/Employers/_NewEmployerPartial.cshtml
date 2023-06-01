@@ -1,0 +1,234 @@
+﻿@model ManageEmployersViewModel
+@inject ISharedViewLocalizer localizer
+
+<style>
+	.my-error-class {
+		color: red;
+	}
+</style>
+<div class="col-lg-10 mx-auto py-4">
+	<form id="formNewEmployee" asp-action="AddUpdateEmployer" asp-controller="Employers" asp-area="BackOffice" method="post" autocomplete="false">
+		@*<div asp-validation-summary="All" class="text-danger"></div>*@
+		<p>@ViewBag.Error</p>
+		<input type="hidden" asp-for="Employer.Id" />
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="row py-4">
+					<div class="col-4">
+						<div class="d-flex flex-column  fs-4">
+							<label for="first_name">@localizer["First Name"]</label>
+							<input asp-for="Employer.FirstName" class="text__input mt-1" placeholder="">
+							<span asp-validation-for="Employer.FirstName" class="text-danger"></span>
+
+						</div>
+						<div class="d-flex flex-column  fs-4">
+							<label for="first_name">@localizer["Last Name"]</label>
+							<input asp-for="Employer.LastName" class="text__input mt-1" placeholder="">
+							<span asp-validation-for="Employer.LastName" class="text-danger"></span>
+
+						</div>
+						<div class="d-flex flex-column mt-3 fs-4">
+							<label for="first_name">@localizer["Email"]</label>
+							<input asp-for="Email" class="text__input mt-1" autocomplete="off">
+							<span asp-validation-for="Email" class="text-danger"></span>
+						</div>
+						<div class="d-flex flex-column col-12 fs-4 mt-3">
+							<label for="first_name">@localizer["Phone number"]</label>
+							<input asp-for="PhoneNumber" class="text__input mt-1" autocomplete="none">
+							<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+						</div>
+
+						<div class="d-flex flex-column col-12 fs-4 mt-3">
+							<label for="first_name">@localizer["Address"]</label>
+							<input asp-for="Employer.AddressLine1" class="text__input mt-1" placeholder="Address Line 1">
+							<span asp-validation-for="Employer.AddressLine1" class="text-danger"></span>
+						</div>
+
+						<div class="d-flex flex-column col-12 fs-4">
+							<input asp-for="Employer.AddressLine2" class="text__input mt-1" placeholder="Address Line 2">
+							<span asp-validation-for="Employer.AddressLine2" class="text-danger"></span>
+						</div>
+
+						<div class="d-flex flex-column col-12 fs-4">
+							<input asp-for="Employer.City" class="text__input mt-1" placeholder="City">
+							<span asp-validation-for="Employer.City" class="text-danger"></span>
+						</div>
+						<div class="d-flex flex-column col-12 fs-4">
+							<input asp-for="Employer.Zip" class="text__input mt-1" placeholder="Zip Code">
+							<span asp-validation-for="Employer.Zip" class="text-danger"></span>
+						</div>
+
+						<div class="d-flex flex-column col-12 fs-4">
+							<input asp-for="Employer.Country" class="text__input mt-1" placeholder="Country">
+							<span asp-validation-for="Employer.Country" class="text-danger"></span>
+						</div>
+
+						<div class="d-flex flex-column col-12 fs-4">
+							<input asp-for="Employer.Region" class="text__input mt-1" placeholder="State/Province">
+							<span asp-validation-for="Employer.Region" class="text-danger"></span>
+						</div>
+						<div class="d-flex flex-column col-12 fs-4 mt-3">
+							<label for="first_name">@localizer["Password"]</label>
+							<input asp-for="Password" class="text__input mt-1" autocomplete="new-password">
+							<span asp-validation-for="Password" class="text-danger"></span>
+						</div>
+						<div class="d-flex align-items-center col-5 fs-4 mt-4">
+							<input asp-for="Employer.IsActive" class="form-check-input m-0" type="checkbox">
+							<label class="form-check-label" style="margin-left: 1rem;" for="flexCheckDefault">
+								@localizer["Active"]
+							</label>
+						</div>
+					</div>
+					<div class="col-6 offset-1">
+						<p>@localizer["Permission List"]</p>
+						<div class="d-flex flex-column gap-3">
+
+							@for (var i = 0; i < Model.EPermissions.Count; i++)
+							{
+								<div class="d-flex align-items-center justify-content-between pb-2 border-bottom-1">
+									<div>
+										@Html.CheckBoxFor(x => x.EPermissions[i].IsSelected, new { @class="form-check-input permission", style="transform: scale(1.2);", data_pid =i })
+										@Html.HiddenFor(x => x.EPermissions[i].Permission.Id)
+										@Html.HiddenFor(x => x.EPermissions[i].Permission.Name)
+										@Html.DisplayFor(model => model.EPermissions[i].Permission.Name,new { @class="form-check-label", style="margin-left: 0.5rem;" })
+									</div>
+
+									<div class="d-flex gap-3 align-items-center justify-content-between">
+										@Html.RadioButtonFor(model => model.EPermissions[i].SelectedPermission,PermissionType.View, new { @disabled=true, @class="v"+i, style="transform: scale(1.2);" } )
+										@localizer["View"]
+										@Html.RadioButtonFor(model => model.EPermissions[i].SelectedPermission,PermissionType.Update, new { @disabled=true,@class="u"+i, style="transform: scale(1.2);"} )
+										@localizer["View & Update"]
+									</div>
+
+								</div>
+							}
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="mt-5 text-end">
+				<button @@click="active_tab = 1" type="button" class="btn_outline fs-5 fw-600"
+						style="margin-right: 1rem;">
+					@localizer["Cancel"]
+				</button>
+				<button type="submit"
+						class="btn_solid fs-5 fw-600 bg_primary_hover text-white submitBtn" style="margin-right: 1rem;">
+					@localizer["Add"]
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+
+	$(".permission").change(function () {
+		var id = $(this).attr("data-pid");
+		var idv = ".v" + id;
+		var idu = ".u" + id;
+		if (this.checked) {
+			$(idv).prop('checked', true);
+			$(idv).removeProp('disabled');
+			$(idu).removeProp('disabled');
+		}
+		else {
+
+			$(idv).removeProp('checked');
+			$(idu).removeProp('checked');
+			$(idv).prop('disabled', true);
+			$(idu).prop('disabled', true);
+		}
+	});
+
+	$('#formNewEmployee').validate({
+		errorClass: "my-error-class",
+		rules: {
+			'Employer.FirstName': {
+				required: true
+			},
+			'Employer.LastName': {
+				required: true,
+			},
+			'Transaction.Reference': {
+				required: true
+			},
+			'Email': {
+				required: true,
+				email: true,
+				remote: {
+					url: "Employers/IsEmailTaken",
+					type: "post",
+					data: {
+						email: function () {
+							return $("#Email").val();
+						}
+					}
+				}
+			},
+			'PhoneNumber': {
+				required: true,
+				remote: {
+					url: "Employers/IsPhoneNoTaken",
+					type: "post",
+					data: {
+						phoneno: function () {
+							return $("#PhoneNumber").val();
+						}
+					}
+				}
+			},
+			'Employer.AddressLine1': {
+				required: true
+			},
+			'Employer.City': {
+				required: true
+			},
+			'Employer.Zip': {
+				required: true
+			},
+			'Employer.Country': {
+				required: true
+			},
+			'Employer.Region': {
+				required: true
+			},
+			'Password': {
+				required: true,
+				minlength: 6,
+				passwordCheck: true
+			},
+		},
+		messages: {
+			'Email': {
+				remote: "Email already exists"
+			},
+			'PhoneNumber': {
+				remote: "Phone number already exists"
+			}
+		},
+		submitHandler: function (e) {
+			$(".submitBtn").attr("disabled", true);
+			return true;
+		}
+	});
+
+	jQuery.validator.addMethod("passwordCheck",
+		function (value, element, param) {
+			if (this.optional(element)) {
+				return true;
+			} else if (!/[A-Z]/.test(value)) {
+				return false;
+			} else if (!/[a-z]/.test(value)) {
+				return false;
+			} else if (!/[0-9]/.test(value)) {
+				return false;
+			} else if (!/[$&+,:;=?@@#|<>.^*()%!-]/.test(value)) {
+				return false;
+			}
+
+			return true;
+		},
+		"password should contain an uppercase character, lowercase character, a digit, and a non-alphanumeric character. Passwords must be at least six characters long.");
+</script>

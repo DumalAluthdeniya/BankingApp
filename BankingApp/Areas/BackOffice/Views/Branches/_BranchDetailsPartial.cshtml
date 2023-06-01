@@ -1,5 +1,17 @@
-﻿@inject ISharedViewLocalizer localizer
+﻿@using BankingApp.Areas.BackOffice;
+@using BankingApp.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@inject ISharedViewLocalizer localizer
+
 @model ManageBranchesViewModel
+
+@{
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
 
 <div class="col-lg-8 mx-auto py-4">
 	<div asp-validation-summary="All" class="text-danger"></div>
@@ -64,16 +76,15 @@
 				</label>
 				<input class="form-check-input" type="checkbox" asp-for="Branch.IsActive" />
 			</div>
-			<div class="mt-5 text-end">
-				<button type="submit" class="btn_outline fs-5 fw-600"
-						style="margin-right: 1rem;">
-					@localizer["Cancel"]
-				</button>
-				<button type="submit"
+			@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Branches")).PermissionType == PermissionType.Update)
+			{
+				<div class="mt-5 text-end">
+					<button type="submit"
 						class="btn_solid fs-5 fw-600 bg_primary_hover text-white">
-					@localizer["Update"]
-				</button>
-			</div>
+						@localizer["Update"]
+					</button>
+				</div>
+			}
 		</div>
 	</form>
 </div>

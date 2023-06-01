@@ -17,7 +17,7 @@ namespace BankingApp.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.11")
+                .HasAnnotation("ProductVersion", "6.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -30,14 +30,14 @@ namespace BankingApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AccountNo")
-                        .HasColumnType("int");
+                    b.Property<long>("AccountNo")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("AccountType")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -193,6 +193,41 @@ namespace BankingApp.Data.Migrations
                     b.ToTable("Branches");
                 });
 
+            modelBuilder.Entity("BankingApp.Models.CustomerContact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ContactUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactUserId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Contacts");
+                });
+
             modelBuilder.Entity("BankingApp.Models.EmployeePermission", b =>
                 {
                     b.Property<int>("Id")
@@ -232,32 +267,29 @@ namespace BankingApp.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<decimal>("BuyingRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("ChangePercantage")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ExchangeId")
-                        .HasColumnType("int");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTime>("LastUpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("MarketRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("MarketRatePreviousDay")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("SellingRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("Spread")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
@@ -268,6 +300,41 @@ namespace BankingApp.Data.Migrations
                     b.ToTable("Exchanges");
                 });
 
+            modelBuilder.Entity("BankingApp.Models.ExchangeHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("BuyingRate")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ExchangeId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MarketRate")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("SellingRate")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("UpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExchangeId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("ExchangeHistory");
+                });
+
             modelBuilder.Entity("BankingApp.Models.Loan", b =>
                 {
                     b.Property<int>("Id")
@@ -276,14 +343,20 @@ namespace BankingApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("BankOfferAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTime>("BankResponseDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Collateral")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -295,14 +368,20 @@ namespace BankingApp.Data.Migrations
                     b.Property<string>("EmployeeId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<decimal>("Fees")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<decimal>("InterestRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("LoanStatus")
                         .HasColumnType("int");
 
+                    b.Property<int>("LoanType")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("MonthlyPayment")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
@@ -312,9 +391,11 @@ namespace BankingApp.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("CustomerId");
 
@@ -331,26 +412,29 @@ namespace BankingApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("BeginningBalance")
+                        .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Capital")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("EndingBalance")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("Interest")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int?>("LoanId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Outstanding")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Principle")
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LoanId");
 
-                    b.ToTable("LoanItem");
+                    b.ToTable("LoanItems");
                 });
 
             modelBuilder.Entity("BankingApp.Models.Permission", b =>
@@ -365,6 +449,9 @@ namespace BankingApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SequenceNo")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Permissions");
@@ -373,57 +460,135 @@ namespace BankingApp.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Manage Customers"
+                            Name = "Manage Customers",
+                            SequenceNo = 3
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Manage Loan"
+                            Name = "Manage Loan",
+                            SequenceNo = 8
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Manage Fee"
+                            Name = "Manage Fee",
+                            SequenceNo = 9
                         },
                         new
                         {
                             Id = 4,
-                            Name = "Manage Support"
+                            Name = "Manage Support",
+                            SequenceNo = 7
                         },
                         new
                         {
                             Id = 5,
-                            Name = "Manage Exchange"
+                            Name = "Manage Exchange",
+                            SequenceNo = 6
                         },
                         new
                         {
                             Id = 6,
-                            Name = "Manage Employees"
+                            Name = "Manage Employees",
+                            SequenceNo = 4
                         },
                         new
                         {
                             Id = 7,
-                            Name = "Manage Cards"
+                            Name = "Manage Cards",
+                            SequenceNo = 5
                         },
                         new
                         {
                             Id = 8,
-                            Name = "Manage Dashboard"
+                            Name = "Manage Dashboard",
+                            SequenceNo = 1
                         },
                         new
                         {
                             Id = 9,
-                            Name = "Manage Branches"
+                            Name = "Manage Branches",
+                            SequenceNo = 2
                         },
                         new
                         {
                             Id = 10,
-                            Name = "Manage Settlements"
+                            Name = "Manage Settlements",
+                            SequenceNo = 10
                         },
                         new
                         {
                             Id = 11,
-                            Name = "Manage Post Updates"
+                            Name = "Manage Post Updates",
+                            SequenceNo = 11
+                        });
+                });
+
+            modelBuilder.Entity("BankingApp.Models.Setting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Key = "Exchange_BaseCurrency"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Key = "Exchange_CurrencyList"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Key = "Exchange_ApiLayerApiKey"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Key = "Email_SMTPServer"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Key = "Email_SMTPUser"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Key = "Email_SMTPPassword"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Key = "Account_BaseAccountNo"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Key = "Other_BaseCustomerId"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Key = "Other_ApplicationUrl"
                         });
                 });
 
@@ -435,12 +600,22 @@ namespace BankingApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Subject")
                         .IsRequired()
@@ -452,9 +627,35 @@ namespace BankingApp.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Supports");
+                });
+
+            modelBuilder.Entity("BankingApp.Models.SupportFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupportItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupportItemId");
+
+                    b.ToTable("SupportFiles");
                 });
 
             modelBuilder.Entity("BankingApp.Models.SupportItem", b =>
@@ -501,6 +702,9 @@ namespace BankingApp.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Balance")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("CreatedById")
@@ -565,14 +769,14 @@ namespace BankingApp.Data.Migrations
                         new
                         {
                             Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
-                            ConcurrencyStamp = "a68b1276-a3e5-488f-be61-69c0e82f6882",
+                            ConcurrencyStamp = "9501b1de-b3d0-41d5-a5ab-9a7fe1f1e4a8",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
                             Id = "fd0ff8e2-f1a8-4a42-835e-d4aaff7e7b8d",
-                            ConcurrencyStamp = "f52fcecd-0884-4f98-8a2c-855dd0703246",
+                            ConcurrencyStamp = "b12045a7-5d46-4834-931e-2c402e3197e8",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -771,7 +975,7 @@ namespace BankingApp.Data.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<decimal>("AccountBalance")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("AddressLine1")
                         .IsRequired()
@@ -791,6 +995,9 @@ namespace BankingApp.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<long>("CustomerUniqueId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("DefaultPassword")
                         .HasColumnType("nvarchar(max)");
 
@@ -806,7 +1013,7 @@ namespace BankingApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("LoanBalance")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("ProfileImage")
                         .HasColumnType("nvarchar(max)");
@@ -829,14 +1036,14 @@ namespace BankingApp.Data.Migrations
                         {
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c38b7c22-654b-4f1e-84ba-20b75cddca5c",
+                            ConcurrencyStamp = "a832a2e7-2292-4875-bfd5-627ed9cabec3",
                             Email = "admin@sif.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN@SIF.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAENeLEm/Ty7v752WwM/dC0MJEG6ue78TS3vJi+yjEMoiWz3t+QJUOcWZIIvPOgyQ82Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEP1DNZq+33bd0rtjx6P6tc+BXHsM7GNy2eoW4oo67cmTmaSQNTu7XDj8IFNIPUNugA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a78715e7-5d23-46ed-894e-6fae1683f048",
+                            SecurityStamp = "079ecd52-37b3-4ee0-bddb-5cf2ff0dd3ae",
                             TwoFactorEnabled = false,
                             UserName = "admin@sif.com",
                             AccountBalance = 0m,
@@ -844,7 +1051,8 @@ namespace BankingApp.Data.Migrations
                             AddressLine2 = "",
                             City = "",
                             Country = "",
-                            CreatedDate = new DateTime(2023, 3, 22, 20, 23, 38, 273, DateTimeKind.Local).AddTicks(611),
+                            CreatedDate = new DateTime(2023, 5, 26, 14, 55, 13, 735, DateTimeKind.Local).AddTicks(8172),
+                            CustomerUniqueId = 0L,
                             FirstName = "",
                             IsActive = true,
                             LastName = "",
@@ -888,6 +1096,21 @@ namespace BankingApp.Data.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("BankingApp.Models.CustomerContact", b =>
+                {
+                    b.HasOne("BankingApp.Models.ApplicationUser", "ContactUser")
+                        .WithMany()
+                        .HasForeignKey("ContactUserId");
+
+                    b.HasOne("BankingApp.Models.ApplicationUser", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
+                    b.Navigation("ContactUser");
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("BankingApp.Models.EmployeePermission", b =>
                 {
                     b.HasOne("BankingApp.Models.ApplicationUser", "Employee")
@@ -907,8 +1130,31 @@ namespace BankingApp.Data.Migrations
                     b.Navigation("Permission");
                 });
 
+            modelBuilder.Entity("BankingApp.Models.ExchangeHistory", b =>
+                {
+                    b.HasOne("BankingApp.Models.Exchange", "Exchange")
+                        .WithMany()
+                        .HasForeignKey("ExchangeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BankingApp.Models.ApplicationUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Exchange");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("BankingApp.Models.Loan", b =>
                 {
+                    b.HasOne("BankingApp.Models.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BankingApp.Models.ApplicationUser", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
@@ -918,6 +1164,8 @@ namespace BankingApp.Data.Migrations
                     b.HasOne("BankingApp.Models.ApplicationUser", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId");
+
+                    b.Navigation("Account");
 
                     b.Navigation("Customer");
 
@@ -935,13 +1183,30 @@ namespace BankingApp.Data.Migrations
 
             modelBuilder.Entity("BankingApp.Models.Support", b =>
                 {
+                    b.HasOne("BankingApp.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.HasOne("BankingApp.Models.ApplicationUser", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("CreatedBy");
+
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("BankingApp.Models.SupportFile", b =>
+                {
+                    b.HasOne("BankingApp.Models.SupportItem", "SupportItem")
+                        .WithMany("Files")
+                        .HasForeignKey("SupportItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SupportItem");
                 });
 
             modelBuilder.Entity("BankingApp.Models.SupportItem", b =>
@@ -1038,6 +1303,11 @@ namespace BankingApp.Data.Migrations
             modelBuilder.Entity("BankingApp.Models.Loan", b =>
                 {
                     b.Navigation("LoanItems");
+                });
+
+            modelBuilder.Entity("BankingApp.Models.SupportItem", b =>
+                {
+                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("BankingApp.Models.ApplicationUser", b =>

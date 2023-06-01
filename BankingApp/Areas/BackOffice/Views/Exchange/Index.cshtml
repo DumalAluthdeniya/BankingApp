@@ -1,88 +1,115 @@
-﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+﻿@using BankingApp.Areas.BackOffice;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@using BankingApp.Data;
+@inject ISharedViewLocalizer localizer
 @model ManageExchangesViewModel
+
 @{
 	ViewData["Title"] = "Manage Exchnage";
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
 }
+<style>
+	.my-error-class {
+		color: red;
+	}
+
+	.modal-content {
+		width: 120%;
+	}
+
+</style>
 <main class="col-lg-10 offset-lg-2">
 	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
 		<div class="d-none d-lg-block">
-			<h4 class="fw-semibold" style="font-size: 22px;">Manage Exchange</h4>
+			<h4 class="fw-semibold" style="font-size: 22px;">@localizer["Exchange"]</h4>
 		</div>
+		<div class="d-flex flex-row-reverse">
+			<a asp-action="Profile" asp-controller="Employers" asp-area="BackOffice">
+				<img src="~/assets/svg/user profile.svg" alt="" srcset="">
+			</a>
+			<div style="margin-right: 50px">
+				@await Html.PartialAsync("_CulturePartial")
+			</div>
 
-		<div>
-			@await Html.PartialAsync("_CulturePartial")
 		</div>
 	</nav>
 
 	<div class="p-4">
 		<div class="">
-			<p class="fs-5 fw-800">Your base currency is USD ($)</p>
+			<p class="fs-5 fw-800">@localizer["Your base currency is"] @Model.BaseCurrency</p>
 			<div class="mt-4">
-				<form asp-action="AddUpdateExchange" asp-controller="Exchange" asp-area="BackOffice" method="post">
+				@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Exchange")).PermissionType == PermissionType.Update)
+				{
+					<form id="exchangeForm" asp-action="AddUpdateExchange" asp-controller="Exchange" asp-area="BackOffice" method="post">
 
-					<div class="row">
-						<div class="d-flex flex-column col-3 fs-4">
-							<label asp-for="Exchange.Name">Currency name</label>
-							<input asp-for="Exchange.Name" class="text__input mt-1 p-2" placeholder="">
-							<span asp-validation-for="Exchange.Name" class="text-danger"></span>
-
-						</div>
-
-						<div class="d-flex flex-column col-3 fs-4">
-							<label asp-for="Exchange.Symbol">Currency Symbol</label>
-							<input asp-for="Exchange.Symbol" class="text__input mt-1 p-2" placeholder="">
-							<span asp-validation-for="Exchange.Symbol" class="text-danger"></span>
-						</div>
-
-						<div class="d-flex flex-column col-3 fs-4">
-							<label asp-for="Exchange.MarketRate"> Market Rate </label>
-							<input asp-for="Exchange.MarketRate" class="text__input mt-1 p-2" placeholder="">
-							<span asp-validation-for="Exchange.MarketRate" class="text-danger"></span>
-						</div>
-
-						<div class="row align-items-end mt-4">
+						<div class="row">
 							<div class="d-flex flex-column col-3 fs-4">
-								<label for="first_name"> Selling Rate </label>
-								<input asp-for="Exchange.SellingRate" class="text__input mt-1 p-2" placeholder="">
-								<span asp-validation-for="Exchange.SellingRate" class="text-danger"></span>
-							</div>
-							<div class="d-flex flex-column col-3 fs-4">
-								<label for="first_name"> Buying Rate </label>
-								<input asp-for="Exchange.BuyingRate" class="text__input mt-1 p-2" placeholder="">
-								<span asp-validation-for="Exchange.BuyingRate" class="text-danger"></span>
+								<label asp-for="Exchange.Name">@localizer["Currency name"]</label>
+								<input asp-for="Exchange.Name" class="text__input mt-1 p-2" placeholder="AUD,USD,EUR...">
+								<span asp-validation-for="Exchange.Name" class="text-danger"></span>
+
 							</div>
 
 							<div class="d-flex flex-column col-3 fs-4">
-								<label for="first_name"> Spread % </label>
-								<input asp-for="Exchange.Spread" class="text__input mt-1 p-2" placeholder="" readonly>
-								<span asp-validation-for="Exchange.Spread" class="text-danger"></span>
+								<label asp-for="Exchange.Symbol">@localizer["Currency Symbol"]</label>
+								<input asp-for="Exchange.Symbol" class="text__input mt-1 p-2" placeholder="$,Kr,..">
+								<span asp-validation-for="Exchange.Symbol" class="text-danger"></span>
 							</div>
 
-							<div class="col-4 text-start">
-								<button type="submit"
-										class="btn_solid fs-4 bg_primary_hover mt-1 p-2 text-white">
-									Add
-								</button>
-								<a href="/BackOffice/Exchange/RefreshExchageRates"
-								   class="btn_solid fs-4 bg_primary_hover mt-1 p-2 text-white">
-									Refresh
-								</a>
+							<div class="d-flex flex-column col-3 fs-4">
+								<label asp-for="Exchange.MarketRate"> @localizer["Market Rate"]</label>
+								<input asp-for="Exchange.MarketRate" class="text__input mt-1 p-2" value="0.00">
+								<span id="lblMarketRate" class="text-info"></span>
+								<span asp-validation-for="Exchange.MarketRate" class="text-danger"></span>
 							</div>
+
+							<div class="row align-items-end mt-4">
+								<div class="d-flex flex-column col-3 fs-4">
+									<label for="first_name"> @localizer["Selling Rate"] </label>
+									<input asp-for="Exchange.SellingRate" class="text__input mt-1 p-2" placeholder="">
+									<span asp-validation-for="Exchange.SellingRate" class="text-danger"></span>
+								</div>
+								<div class="d-flex flex-column col-3 fs-4">
+									<label for="first_name"> @localizer["Buying Rate"] </label>
+									<input asp-for="Exchange.BuyingRate" class="text__input mt-1 p-2" placeholder="">
+									<span asp-validation-for="Exchange.BuyingRate" class="text-danger"></span>
+								</div>
+
+								<div class="d-flex flex-column col-3 fs-4">
+									<label for="first_name"> @localizer["Spread"] </label>
+									<input asp-for="Exchange.Spread" class="text__input mt-1 p-2" placeholder="" readonly>
+									<span asp-validation-for="Exchange.Spread" class="text-danger"></span>
+								</div>
+
+								<div class="col-4 text-start">
+									<button type="submit" class="btn_solid fs-4 bg_primary_hover mt-1 p-2 text-white submitBtn">
+										@localizer["Add"]
+									</button>
+									@*<a href="/BackOffice/Exchange/RefreshExchageRates"
+								class="btn_solid fs-4 bg_primary_hover mt-1 p-2 text-white">
+								Refresh
+								</a>*@
+								</div>
+							</div>
+
 						</div>
-
-					</div>
-				</form>
+					</form>
+				}
 				<div class="">
 					<div class="mt-4">
-						<table class="table">
+						<table id="tableExchange" class="table">
 							<thead class="thead-dark">
 								<tr class="bg_primary text-white">
-									<th scope="col" style="padding:1rem;">Currency</th>
-									<th scope="col" style="padding:1rem;">Value</th>
-									<th scope="col" style="padding:1rem;">% Spread</th>
-									<th scope="col" style="padding:1rem;">Change</th>
-									<th scope="col" style="padding:1rem;">% Change</th>
-									<th scope="col" style="padding:1rem;">Date</th>
+									<th scope="col" style="padding:1rem;">@localizer["Currency"]</th>
+									<th scope="col" style="padding:1rem;">@localizer["Value"]</th>
+									<th scope="col" style="padding:1rem;">@localizer["Spread"]</th>
+									<th scope="col" style="padding:1rem;">@localizer["Change"]</th>
+									<th scope="col" style="padding:1rem;">% @localizer["Change"]</th>
+									<th scope="col" style="padding:1rem;">@localizer["Last Updated Date"]</th>
 									<th scope="col" style="padding:1rem;"></th>
 								</tr>
 							</thead>
@@ -92,32 +119,37 @@
 									foreach (var e in Model.Exchanges)
 									{
 										decimal changePercentage = 0;
-										var change = @Model.Exchange.MarketRate - @Model.Exchange.MarketRatePreviousDay;
-										if (change > 0)
-											changePercentage = (change / @Model.Exchange.MarketRatePreviousDay) * 100;
+										decimal change = 0;
+										if (e.MarketRatePreviousDay > 0)
+										{
+											change = e.MarketRate - e.MarketRatePreviousDay;
+											if (change != 0)
+												changePercentage = (+change / +@e.MarketRatePreviousDay) * 100;
 
-
+										}
 
 										<tr class="border-1">
-											<th style="padding:1rem;">@e.Symbol</th>
+											<th style="padding:1rem;">@e.Name (@e.Symbol)</th>
 											<td style="padding:1rem;">@e.MarketRate</td>
 											<td style="padding:1rem;">@e.Spread</td>
 											<td style="padding:1rem;">
 												<span style="padding: 7px 16px;"
-											  class="badge bg_success_lite text_success_dark">@(change > 0 ? "+" : "")@change</span>
+											  class="badge bg_success_lite text_success_dark">@(change != 0 ? @change : "0")</span>
 											</td>
 											<td style="padding:1rem;">
 												<span style="padding: 7px 16px;"
-											  class="badge bg_danger_lite text_danger_dark">@(change > 0 ? "+" : "")@changePercentage%</span>
+											  class="badge bg_danger_lite text_danger_dark">@(change != 0 ? @Math.Round(changePercentage, 2) : "0")%</span>
 											</td>
 											<td style="padding:1rem;">@e.LastUpdatedDate.ToString("g",CultureInfo.CurrentCulture)</td>
-											<td style="padding:1rem" data-bs-toggle="modal"
-										data-bs-target="#exampleModal">
-												<a data-eId="@e.Id" style="border-radius: 4px;"
+
+											<td style="padding:1rem">
+												<a data-bs-toggle="modal"
+										   data-bs-target="#exampleModal" data-eId="@e.Id" style="border-radius: 4px;"
 										   class="bg_primary nav-item text-white text-center px-3 p-2 manageExchange">
 													<img src="../assets/svg/pen.svg" alt="">
 												</a>
 											</td>
+
 										</tr>
 									}
 								}
@@ -128,10 +160,7 @@
 							 aria-labelledby="exampleModalLabel" aria-hidden="true">
 							<div class="modal-dialog">
 								<div class="modal-content" style="padding:2rem;">
-									<div class="d-flex justify-content-between align-items-center mb-4">
-										<h3 class="text__heading">Update Currency</h3>
-										<span class="nav-item" data-bs-dismiss="modal"><img src="../assets/svg/close.svg" alt="" srcset=""></button>
-									</div>
+
 									<div id="exchangeDetailsPartial"></div>
 								</div>
 							</div>
@@ -146,10 +175,42 @@
 @section Scripts{
 
 	<script>
-		$(".manageExchange").click(function () {
+
+		$("#tableExchange").DataTable();
+
+		$("#Exchange_SellingRate").keyup(function () {
+			var sRate = $("#Exchange_SellingRate").val();
+			var bRate = $("#Exchange_BuyingRate").val();
+			$("#Exchange_Spread").val((+sRate - +bRate).toFixed(2));
+		});
+
+		$("#Exchange_BuyingRate").keyup(function () {
+			var sRate = $("#Exchange_SellingRate").val();
+			var bRate = $("#Exchange_BuyingRate").val();
+			$("#Exchange_Spread").val((+sRate - +bRate).toFixed(2));
+		});
+
+		$('#tableExchange tbody').on('click', '.manageExchange', function () {
 			var cId = $(this).attr("data-eId");
 			LoadExchangeDetails(cId);
 		})
+
+		$("#Exchange_Symbol").blur(function () {
+
+			$.ajax({
+				type: "GET",
+				async: true,
+				url: '/BackOffice/Exchange/GetExchnageRate',
+				data: { "name": $("#Exchange_Name").val() },
+				success: function (data) {
+					$("#Exchange_MarketRate").val(data.toFixed(2));
+					toastr.info('Market value updated from API.');
+				},
+				error: function (error) {
+					toastr.error('Invalid currency name or no access to API');
+				}
+			});
+		});
 
 		function LoadExchangeDetails(cId) {
 			$.ajax({
@@ -165,6 +226,30 @@
 				}
 			});
 		}
+
+		$('#exampleModal').on('hidden.bs.modal', function () {
+			location.reload();
+		});
+
+		$('#exchangeForm').validate({ // initialize the plugin
+			errorClass: "my-error-class",
+			rules: {
+				'Exchange.Name': {
+					required: true
+				},
+				'Exchange.Symbol': {
+					required: true,
+				},
+				'Exchange.MarketRate': {
+					required: true,
+					maxlength: 25
+				}
+			},
+			submitHandler: function (e) {
+				$(".submitBtn").attr("disabled", true);
+				return true;
+			}
+		});
 	</script>
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 

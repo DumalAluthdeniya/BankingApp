@@ -1,0 +1,24 @@
+﻿@model IEnumerable<LoanItem>
+@inject ISharedViewLocalizer localizer
+
+<table class="table">
+	<thead class="thead-dark">
+		<tr class="bg_primary text-white fs-6">
+			<th scope="col" style="padding:1rem;">@localizer["Beginning Balance"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Interest"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Principle"]</th>
+			<th scope="col" style="padding:1rem;">@localizer["Ending Balance"]</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var li in Model)
+		{
+			<tr class="secondery__font border-1">
+				<th style="padding:1rem;">@li.BeginningBalance.ToString("C",CultureInfo.CurrentCulture)</th>
+				<td style="padding:1rem;">@li.Interest.ToString("C",CultureInfo.CurrentCulture)</td>
+				<td style="padding:1rem;">@li.Principle.ToString("C",CultureInfo.CurrentCulture)</td>
+				<td style="padding:1rem;">@li.EndingBalance.ToString("C",CultureInfo.CurrentCulture)</td>
+			</tr>
+		}
+	</tbody>
+</table>

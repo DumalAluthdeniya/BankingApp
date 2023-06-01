@@ -1,16 +1,16 @@
 ﻿@model ManageCustomersViewModel
-
+@inject ISharedViewLocalizer localizer
 
 <div class="row">
 	<div class="col-4">
 		<table class="table">
 			<thead class="thead-dark">
 				<tr class="bg_primary text-white border">
-					<th scope="col" style="padding:1rem;">Account Type</th>
-					<th scope="col" style="padding:1rem;">Account No</th>
-					<th scope="col" style="padding:1rem;">Account Balance</th>
-					<th scope="col" style="padding:1rem;">Status</th>
-					<th scope="col" style="padding:1rem;">Manage</th>
+					<th scope="col" style="padding:1rem;">@localizer["Account Type"]</th>
+					<th scope="col" style="padding:1rem;">@localizer["Account No"]</th>
+					<th scope="col" style="padding:1rem;">@localizer["Account Balance"]</th>
+					<th scope="col" style="padding:1rem;">@localizer["Status"]</th>
+					<th scope="col" style="padding:1rem;">@localizer["Manage"]</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -23,7 +23,7 @@
 							<td style="padding:1rem;">@a.AccountNo</td>
 							<td class="secondery__font fw-500" style="padding:1rem;"><b>@a.Balance.ToString("C", CultureInfo.CurrentCulture)</b></td>
 							<td style="padding:1rem;">@(a.IsActive ? "Active" : "Deactivated")</td>
-							<td style="padding:1rem;"><a data-aId="@a.Id" @@click="active_tab = 5" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 manageAccountDetails">Manage</a></td>
+							<td style="padding:1rem;"><a data-aId="@a.Id" @@click="active_tab = 5" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 manageAccountDetails">@localizer["Manage"]</a></td>
 						</tr>
 					}
 

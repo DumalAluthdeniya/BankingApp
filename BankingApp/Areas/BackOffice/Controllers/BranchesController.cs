@@ -11,16 +11,17 @@ using Microsoft.EntityFrameworkCore;
 namespace BankingApp.Areas.BackOffice.Controllers
 {
 	[Authorize]
+	[HasPermission("Manage Branches")]
 	[Area("BackOffice")]
 	[Route("BackOffice/[controller]")]
 	public class BranchesController : Controller
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly ILogger<HomeController> _logger;
+		private readonly ILogger<UserController> _logger;
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly UserManager<ApplicationUser> _userManager;
 
-		public BranchesController(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, ILogger<HomeController> logger, UserManager<ApplicationUser> userManager)
+		public BranchesController(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, ILogger<UserController> logger, UserManager<ApplicationUser> userManager)
 		{
 			_context = context;
 			_roleManager = roleManager;

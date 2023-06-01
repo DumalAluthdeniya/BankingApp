@@ -1,62 +1,186 @@
 ﻿@model ManageLoansViewModel
+@inject ISharedViewLocalizer localizer
+
+<input type="hidden" asp-for="@Model.Loan.Id">
 <div class="row">
 	<div class="col-lg-4">
-		<div class="my-3 d-flex justify-content-between" style="padding:0 2rem;">
-			<div class="d-flex flex-column">
-				<div>
-					<label for="">Name</label>
-					<p class="fs-6 fw-500 mt-1">@Model.Loan.Customer.FirstName @Model.Loan.Customer.LastName</p>
+		<div class="row">
+			<div class="my-3 d-flex justify-content-between" style="padding:0 2rem;">
+				<div class="d-flex flex-column">
+					<div>
+						<label for="">@localizer["Name"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.Customer.FirstName @Model.Loan.Customer.LastName</p>
+					</div>
+					<div>
+						<label for="">@localizer["Amount"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.BankOfferAmount.ToString("C",CultureInfo.CurrentCulture)</p>
+					</div>
+					<div>
+						<label for="">@localizer["Fees"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.Fees.ToString("C",CultureInfo.CurrentCulture)</p>
+					</div>
+					<div>
+						<label for="">@localizer["Type"]</label>
+						<p class="fs-6 fw-500">@Model.Loan.LoanType.ToString()</p>
+					</div>
+					<div>
+						<label for="">@localizer["Date"]</label>
+						<p class="fs-6 fw-500">@Model.Loan.CreatedDate.ToString("g",CultureInfo.CurrentCulture)</p>
+					</div>
+					<div>
+						<label for="">@localizer["Created Officer"]</label>
+						<p class="fs-6 fw-500">@Model.Loan.Employee.FirstName @Model.Loan.Employee.LastName</p>
+					</div>
 				</div>
-				<div>
-					<label for="">Amount</label>
-					<p class="fs-6 fw-500 mt-1">@Model.Loan.BankOfferAmount.ToString("C",CultureInfo.CurrentCulture)</p>
-				</div>
-				<div>
-					<label for="">Date</label>
-					<p class="fs-6 fw-500">@Model.Loan.CreatedDate.ToString("g",CultureInfo.CurrentCulture)</p>
-				</div>
-				<div>
-					<label for="">Created Officer</label>
-					<p class="fs-6 fw-500">@Model.Loan.Employee.FirstName @Model.Loan.Employee.LastName</p>
+				<div class="d-flex flex-column">
+					<div>
+						<label for="">@localizer["Purpose of loan"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.Purpose</p>
+					</div>
+					<div>
+						<label for="">@localizer["Loan Term (months)"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.Term</p>
+					</div>
+					<div>
+						<label for="">@localizer["Collateral"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.Collateral</p>
+					</div>
+					<div>
+						<label for="">@localizer["Total Amout"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.TotalAmount.ToString("C",CultureInfo.CurrentCulture)</p>
+					</div>
+					<div>
+						<label for="">@localizer["Monthly Payment"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.MonthlyPayment.ToString("C",CultureInfo.CurrentCulture)</p>
+					</div>
+					<div>
+						<label for="">@localizer["Paid Amount"]</label>
+						<p class="fs-6 fw-500 mt-1">@Model.Loan.Account.Transactions.Sum(t => t.Amount).ToString("C",CultureInfo.CurrentCulture)</p>
+					</div>
+					<div>
+						<label for="">@localizer["Outstanding"]</label>
+						@{
+							var paidAmount = Model.Loan.Account.Transactions.Sum(t => t.Amount);
+							if (paidAmount > 0)
+							{
+								var noOfInstallmentsPaid = paidAmount / Model.Loan.MonthlyPayment;
+								if (noOfInstallmentsPaid > 1)
+								{
+									if (int.TryParse(noOfInstallmentsPaid.ToString(), out int value))
+									{
+										int count = Convert.ToInt32(noOfInstallmentsPaid);
+										var loanItem = Model.Loan.LoanItems[count - 1];
+										<p class="fs-6 fw-500 mt-1">@loanItem.EndingBalance.ToString("C",CultureInfo.CurrentCulture)</p>
+									}
+									else
+									{
+										var count = Convert.ToInt32(Math.Truncate(noOfInstallmentsPaid));
+										var loanItem = Model.Loan.LoanItems[count - 1];
+										var expectedPaid = Model.Loan.MonthlyPayment * count;
+										var partyPaidAmount = paidAmount - expectedPaid;
+										var outstanding = loanItem.EndingBalance - partyPaidAmount;
+										<p class="fs-6 fw-500 mt-1">@outstanding.ToString("C",CultureInfo.CurrentCulture)</p>
+									}
+								}
+								else
+								{
+									var outstanding = @Model.Loan.BankOfferAmount - paidAmount;
+									<p class="fs-6 fw-500 mt-1">@outstanding.ToString("C",CultureInfo.CurrentCulture)</p>
+								}
+
+							}
+							else
+							{
+								<p class="fs-6 fw-500 mt-1">@Model.Loan.BankOfferAmount.ToString("C",CultureInfo.CurrentCulture)</p>
+							}
+						}
+					</div>
 				</div>
 			</div>
-			<div class="d-flex flex-column">
-				<div>
-					<label for="">Purpose of loan</label>
-					<p class="fs-6 fw-500 mt-1">@Model.Loan.Purpose</p>
-				</div>
-				<div>
-					<label for="">Loan Term (month)</label>
-					<p class="fs-6 fw-500 mt-1">@Model.Loan.Term</p>
-				</div>
-				<div>
-					<label for="">Collateral</label>
-					<p class="fs-6 fw-500 mt-1">Land</p>
-				</div>
-			</div>
+		</div>
+		<div class="row">
+			<h5>@localizer["Payment history for loan : "]: <strong>@Model.Loan.Account.AccountNo</strong> </h5>
+
+			<table id="tableTransation" class="table">
+				<thead class="thead-dark">
+					<tr class="bg_primary text-white border">
+						<th scope="col" style="padding:1rem;">@localizer["Amount"]</th>
+						<th scope="col" style="padding:1rem;">@localizer["Description"]</th>
+						<th scope="col" style="padding:1rem;">@localizer["Date"]</th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (Model.Loan.Account.Transactions != null && Model.Loan.Account.Transactions.Any())
+					{
+						@foreach (var a in Model.Loan.Account.Transactions.OrderByDescending(o => o.CreatedDate))
+						{
+							<tr class="border">
+								<td style="padding:1rem;">@a.Amount.ToString("C", CultureInfo.CurrentCulture)</td>
+								<td style="padding:1rem;">@a.Description</td>
+								<td style="padding:1rem;">@a.CreatedDate.ToString("g", CultureInfo.CurrentCulture)</td>
+							</tr>
+						}
+
+					}
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<div class="col-lg-7 offset-1">
 		<table class="table">
 			<thead class="thead-dark">
 				<tr class="bg_primary text-white fs-6">
-					<th scope="col" style="padding:1rem;">Capital</th>
-					<th scope="col" style="padding:1rem;">Int Rate %</th>
-					<th scope="col" style="padding:1rem;">Payment</th>
-					<th scope="col" style="padding:1rem;">Balance</th>
+					<th scope="col" style="padding:1rem;">@localizer["Beginning Balance"]</th>
+					<th scope="col" style="padding:1rem;">@localizer["Interest"]</th>
+					<th scope="col" style="padding:1rem;">@localizer["Principle"]</th>
+					<th scope="col" style="padding:1rem;">@localizer["Ending Balance"]</th>
+					@*<th scope="col" style="padding:1rem;">Settle</th>*@
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var li in Model.Loan.LoanItems)
 				{
 					<tr class="secondery__font border-1">
-						<th style="padding:1rem;">@li.Capital.ToString("C",CultureInfo.CurrentCulture)</th>
-						<td style="padding:1rem;">@li.Interest%</td>
-						<td style="padding:1rem;">@li.Amount.ToString("C",CultureInfo.CurrentCulture)</td>
-						<td style="padding:1rem;">@li.Balance.ToString("C",CultureInfo.CurrentCulture)</td>
+						<th style="padding:1rem;">@li.BeginningBalance.ToString("C",CultureInfo.CurrentCulture)</th>
+						<td style="padding:1rem;">@li.Interest.ToString("C",CultureInfo.CurrentCulture)</td>
+						<td style="padding:1rem;">@li.Principle.ToString("C",CultureInfo.CurrentCulture)</td>
+						<td style="padding:1rem;">@li.EndingBalance.ToString("C",CultureInfo.CurrentCulture)</td>
+						@*	@if (li.Balance > 0)
+					{
+					<td style="padding:1rem;">
+					<a data-lItemId="@li.Id" style="border-radius: 4px;" class="bg_primary nav-item text-white text-center p-2 settleLoanItem">Settle</a>
+					</td>
+					}*@
 					</tr>
 				}
 			</tbody>
 		</table>
 	</div>
 </div>
+
+<script>
+	$(".settleLoanItem").click(function () {
+		var lId = $(this).attr("data-lItemId");
+		var loanId = $("#Loan_Id").val();
+		SettleLoanItem(lId, loanId);
+		$(this).hide();
+	});
+
+	function SettleLoanItem(lId, loanId) {
+		$.ajax({
+			type: "POST",
+			async: true,
+			url: '/BackOffice/Loans/SettleLoanItem',
+			data: { "loanItemId": lId },
+			success: function (data) {
+				toastr.info('Successfully updated');
+				//window.location.href = "/BackOffice/Loans?activeTab=3&loanId=" + loanId;
+			},
+			error: function (error) {
+				alert('Error occured. Please try again later.');
+			}
+		});
+	}
+
+</script>
+

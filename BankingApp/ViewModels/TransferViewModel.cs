@@ -1,5 +1,4 @@
-﻿using BankingApp.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
 
 namespace BankingApp.ViewModels

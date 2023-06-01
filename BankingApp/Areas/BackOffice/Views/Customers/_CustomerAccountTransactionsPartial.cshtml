@@ -1,79 +1,322 @@
 ﻿@model ManageCustomersViewModel
+@using BankingApp.Areas.BackOffice;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@using BankingApp.Data;
+@inject ISharedViewLocalizer localizer
 
 
+@{
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
 
-<div><a id="btnViewAccounts" data-cId="@Model.Account.CustomerId" class="btn btn-secondary mb-2" @@click="active_tab = 4">View All Accounts of @Model.Account.Customer.FirstName @Model.Account.Customer.LastName  </a></div>
+<style>
+	.d-flex {
+		gap: 10px;
+	}
 
-<div class="row">
-	<div class="col-6">
-		<h4>Transactions for account no : @Model.Account.AccountNo</h4>
+	.text__input {
+		margin-top: 0px;
+	}
 
-		<table class="table">
-			<thead class="thead-dark">
-				<tr class="bg_primary text-white border">
-					<th scope="col" style="padding:1rem;">Type</th>
-					<th scope="col" style="padding:1rem;">Amount</th>
-					<th scope="col" style="padding:1rem;">Description/Ref</th>
-					<th scope="col" style="padding:1rem;">Date</th>
-				</tr>
-			</thead>
-			<tbody>
-				@if (Model.Transactions != null && Model.Transactions.Any())
-				{
-					@foreach (var a in Model.Transactions.OrderByDescending(o => o.CreatedDate))
-					{
-						<tr class="border">
-							<th style="padding:1rem;">@a.TransactionType</th>
-							<td style="padding:1rem;">@a.Amount.ToString("C", CultureInfo.CurrentCulture)</td>
-							<td style="padding:1rem;">@a.Description</td>
-							<td style="padding:1rem;">@a.CreatedDate.ToString("g", CultureInfo.CurrentCulture)</td>
+	.ui-autocomplete {
+		z-index: 100;
+		position: unset;
+	}
+</style>
+
+
+<div>
+	<a id="btnViewAccounts" data-cId="@Model.Account.CustomerId" class="btn btn-secondary mb-2" @@click="active_tab = 4">
+		<span>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
+				<path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z" />
+				<path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z" />
+				<path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z" />
+				<path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z" />
+			</svg>
+		</span>
+		@localizer["Return to Accounts"]
+	</a>
+	@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Customers")).PermissionType == PermissionType.Update)
+	{
+
+		@if (Model.Account.IsActive)
+		{
+			<div id="closeMessage">
+				<a data-cId="@Model.Account.Id" class="btn btn-warning mb-2 deactivateAccount">
+					<span>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+							<path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z" />
+						</svg>
+					</span>
+					@localizer["Close this Account"]
+				</a>
+			</div>
+		}
+		else
+		{
+			<div id="activeMessage">
+				<a data-cId="@Model.Account.Id" class="btn btn-info mb-2 deactivateAccount">
+					<span>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+							<path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z" />
+						</svg>
+					</span>
+					@localizer["Activate this Account"]
+				</a>
+				<div class="alert alert-danger" role="alert">
+					@localizer["This account is deactivated !!!"]
+				</div>
+			</div>
+		}
+	}
+</div>
+@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Customers")).PermissionType == PermissionType.Update)
+{
+	<div class="row mt-3">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-header">
+					<h5>@localizer["Add Transaction"]</h5>
+				</div>
+				<div class="card-body">
+					<form id="myform">
+						<input asp-for="Account.Id" type="hidden" />
+						<input asp-for="Account.Customer.Id" type="hidden" />
+						<div class="d-flex flex-row">
+							<div class="d-flex flex-column">
+								<label for="customer_name">@localizer["Transaction Type"]</label>
+								<select class="text__input" asp-for="Transaction.TransactionType" asp-items="Html.GetEnumSelectList<TransactionType>()" class="form-select">
+								</select>
+							</div>
+							<div class="d-flex flex-column">
+								<label for="email">@localizer["Amount"]</label>
+								<input asp-for="Transaction.Amount" class="text__input" placeholder="">
+							</div>
+
+							<div id="divDescription" class="d-flex flex-column">
+								<label for="phone_number">@localizer["Description"]</label>
+								<input asp-for="Transaction.Description" class="text__input" placeholder="">
+							</div>
+							<div class="d-flex flex-column">
+								<label for="phone_number">@localizer["Reference"]</label>
+								<input asp-for="Transaction.Reference" class="text__input" placeholder="">
+							</div>
+							<div id="destinationAccount" name="destinationAccount" class="d-flex flex-grow-1 flex-column">
+								<label for="phone_number">@localizer["Destination Acount"]</label>
+								<input id="DestinationAccountNoAuto" name="DestinationAccountNoAuto" type="text" value="" class="text__input ui-autocomplete" placeholder="search by customer / account no">
+							</div>
+							<input type="hidden" asp-for="DestinationAccountNo" />
+						</div>
+
+
+						<div id="destinationAccount" class="mt-2">
+							<button id="btnAddTransaction"  type="submit" class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">@localizer["Add"]</button>
+						</div>
+
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+<div class="row mt-1">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Transactions for account no : <strong>@Model.Account.AccountNo</strong> </h5>
+			</div>
+			<div class="card-body" style="overflow-x: scroll;">
+				<div class="row">
+					<p class="col-1">@localizer["Filter:"]</p>
+					<div class="col-11">
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="" checked>
+							<label class="form-check-label" for="free">@localizer["All"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Deposit">
+							<label class="form-check-label" for="free">@localizer["Deposit"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Withdrawal">
+							<label class="form-check-label" for="free">@localizer["Withdrawal"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="TransferToLocal">
+							<label class="form-check-label" for="free">@localizer["Transfer To Local"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Credit">
+							<label class="form-check-label" for="free">@localizer["Credit"]</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" onchange="filterme()" type="radio" name="free" value="Debit">
+							<label class="form-check-label" for="free">@localizer["Debit"]</label>
+						</div>
+					</div>
+				</div>
+				<table id="tableTransation" class="table">
+					<thead class="thead-dark">
+						<tr class="bg_primary text-white border">
+							<th scope="col" style="padding:1rem;">@localizer["Type"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Amount"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Description"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Date"]</th>
+							<th scope="col" style="padding:1rem;">@localizer["Balance"]</th>
 						</tr>
-					}
+					</thead>
+					<tbody>
+						@if (Model.Transactions != null && Model.Transactions.Any())
+						{
+							@foreach (var a in Model.Transactions.OrderByDescending(o => o.CreatedDate))
+							{
+								<tr class="border">
+									<th style="padding:1rem;">@a.TransactionType</th>
+									<td style="padding:1rem;">@a.Amount.ToString("g", CultureInfo.CurrentCulture)</td>
+									<td style="padding:1rem;">@a.Description</td>
+									<td style="padding:1rem;">@a.CreatedDate.ToString("g", CultureInfo.CurrentCulture)</td>
+									<td style="padding:1rem;">@a.Balance.ToString("g", CultureInfo.CurrentCulture)</td>
+								</tr>
+							}
 
-				}
-			</tbody>
-		</table>
-	</div>
-	<div class="col-6">
-		<h4>Add Transaction</h4>
-		<form asp-action="AddUpdateTransaction" asp-controller="Customers" asp-area="BackOffice" method="post">
-			<input asp-for="Account.Id" type="hidden"/>
-			<div class="row py-4">
-				<div class="d-flex flex-column mt-2 col-5 fs-4">
-					<label for="customer_name">Transaction Type</label>
-					<select class="te    xt__input mt-1" asp-for="Transaction.TransactionType" asp-items="Html.GetEnumSelectList<TransactionType>()" class="form-select">
-					</select>
-				</div>
-				<div class="d-flex flex-column col-5 fs-4">
-					<label for="email">Amount</label>
-					<input asp-for="Transaction.Amount" class="text__input mt-1" placeholder="">
-					<span asp-validation-for="Transaction.Amount" class="text-danger"></span>
-				</div>
-				<div class="d-flex flex-column mt-2 col-5 fs-4 mt-4">
-					<label for="phone_number">Description</label>
-					<input asp-for="Transaction.Description" class="text__input mt-1" placeholder="">
-					<span asp-validation-for="Transaction.Description" class="text-danger"></span>
-				</div>
-				<div class="d-flex flex-column mt-2 col-5 fs-4 mt-4">
-					<label for="phone_number">Reference </label>
-					<input asp-for="Transaction.Reference" class="text__input mt-1" placeholder="">
-					<span asp-validation-for="Transaction.Reference" class="text-danger"></span>
-				</div>
+						}
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>Total:</th>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
+						</tr>
+					</tfoot>
+				</table>
 			</div>
-			<div class="mt-5 text-end">
-				<button type="button" class="btn_outline fs-5 fw-600"
-						style="margin-right: 1rem;">
-					Cancel
-				</button>
-				<button type="submit"
-						class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">
-					Add
-				</button>
-			</div>
-		</form>
+		</div>
+
+
 	</div>
+
 </div>
 <script>
+	$(document).ready(function () {
+		$("#destinationAccount").css('visibility', 'hidden');
+		//filterme();
+	});
+
+
+	$('#myform').validate({
+		errorClass: "my-error-class",
+		rules: {
+			'Transaction.Amount': {
+				required: true,
+				min: true
+			},
+			'Transaction.Description': {
+				required: true,
+				maxlength: 50
+			},
+			'Transaction.Reference': {
+				required: true,
+				maxlength: 50
+			},
+			'DestinationAccountNoAuto': {
+				required: {
+					depends: function (element) {
+						if ($("#Transaction_TransactionType option:selected").val() == 5 || $("#Transaction_TransactionType option:selected").val() == 6) {
+							return true;
+						}
+						else {
+							return false;
+						}
+					}
+				}
+			}
+		},
+		submitHandler: function (e) {
+			SubmitForm();
+		}
+	});
+
+	jQuery.validator.addMethod("min",
+		function (value, element) {
+			var cents = parseFloat(value.replace(" ", "").replace(",", ".")).toFixed(2) * 100;
+			return this.optional(element) || (cents >= 01);
+		}, jQuery.validator.format("Amount should be greater than 0.01"));
+
+	function SubmitForm() {
+		$("#btnAddTransaction").prop('disabled', true);
+		$.ajax({
+			type: "POST",
+			url: "/BackOffice/Customers/AddUpdateTransaction",
+			data: $('#myform').serialize(),
+			success: function (msg) {
+				$('#accountDetails').html(msg);
+				$("#btnAddTransaction").prop('disabled', false);
+
+			},
+			error: function (req, status, error) {
+				toastr.error(error);
+			}
+		});
+	}
+	var otable = $("#tableTransation").dataTable({
+		"ordering": false,
+		footerCallback: function (row, data, start, end, display) {
+			var api = this.api();
+
+			// Remove the formatting to get integer data for summation
+			var intVal = function (i) {
+				return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+			};
+
+			// Total over all pages
+			total = api
+				.column(1)
+				.data()
+				.reduce(function (a, b) {
+					return intVal(a) + intVal(b);
+				}, 0);
+
+			// Total over this page
+			pageTotal = api
+				.column(1, { page: 'current' })
+				.data()
+				.reduce(function (a, b) {
+					return intVal(a) + intVal(b);
+				}, 0);
+
+			// Update footer
+			$(api.column(1).footer()).html(pageTotal.toFixed(2));
+		}
+	});
+
+	function filterme() {
+		//use radio values
+		var frees = $('input:radio[name="free"]:checked')[0].value;
+		//now filter in column 2, with no regex, no smart filtering, no inputbox,not case sensitive
+		otable.fnFilter(frees, 0, false, false, false, false);
+	}
+
+	$("#Transaction_TransactionType").change(function () {
+		var type = $(this).val();
+		if (type == 5 || type == 6) {
+			$("#destinationAccount").css("visibility", "visible");
+			//$("#divDescription").css("visibility", "hidden");
+
+		}
+		else {
+			$("#destinationAccount").css('visibility', 'hidden');
+			//$("#divDescription").css('visibility', 'visible');
+
+		}
+	});
 
 	$("#btnViewAccounts").click(function () {
 		var aId = $(this).attr("data-cId");
@@ -90,8 +333,46 @@
 				$('#accounts').html(data);
 			},
 			error: function (error) {
-				alert('Error occured. Please try again later.');
+				toastr.error('Error occured. Please try again later.');
 			}
 		});
 	}
+
+	$(".deactivateAccount").click(function () {
+		var aId = $(this).attr("data-cId");
+		$.ajax({
+			type: "GET",
+			async: true,
+			url: '/BackOffice/Customers/DeativateAccount',
+			data: { "accId": aId },
+			success: function (data) {
+				window.location.href = "/BackOffice/Customers?activeTab=5&accId=" + aId;
+			},
+			error: function (error) {
+				toastr.error('Error occured. Please try again later.');
+			}
+		});
+	});
+
+
+	$("#DestinationAccountNoAuto").autocomplete({
+		source: function (request, response) {
+			$.ajax({
+				url: "/BackOffice/Customers/Accounts", type: "GET", dataType: "json",
+				data: { 'term': request.term, 'type': $("#Transaction_TransactionType").val() },
+				success: function (data) {
+					console.log(data);
+					response($.map(data, function (item) {
+						return { label: item.label, value: item.label, id: item.id };
+					}));
+				}
+			});
+		},
+		//minLength: 2,
+		select: function (event, ui) {
+			$("#DestinationAccountNo").val(ui.item.id);
+			$("#Transaction_Description").prop("disabled", "true").val('To:' + ui.item.label);
+
+		}
+	});
 </script>

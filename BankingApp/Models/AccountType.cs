@@ -6,7 +6,9 @@ namespace BankingApp.Models
 	{
 		[Display(Name = "Savings Account")]
 		Savings = 1,
-		[Display(Name = "Current Account")]
-		Current = 2
+		[Display(Name = "Spending Account")]
+		Spending = 2,
+		[Display(Name = "Loan Account")]
+		Loan = 3
 	}
 }

@@ -1,4 +1,5 @@
 ﻿@model ManageLoansViewModel
+@inject ISharedViewLocalizer localizer
 
 <div class="row">
 	<div class="col-lg-6">
@@ -7,45 +8,45 @@
 			<div class="my-3 d-flex justify-content-between">
 				<div class="d-flex flex-column">
 					<div>
-						<label for="">Name</label>
+						<label for="">@localizer["Name"]</label>
 						<p class="fs-6 fw-500">@Model.Loan.Customer.FirstName @Model.Loan.Customer.LastName</p>
 					</div>
 					<div>
-						<label for="">Amount</label>
+						<label for="">@localizer["Amount"]</label>
 						<p class="fs-6 fw-500">@Model.Loan.Amount.ToString("C",CultureInfo.CurrentCulture)</p>
 					</div>
 				</div>
 				<div class="d-flex flex-column">
 					<div>
-						<label for="">Purpose of loan</label>
+						<label for="">@localizer["Purpose of loan"]</label>
 						<p class="fs-6 fw-500">@Model.Loan.Purpose</p>
 					</div>
 					<div>
-						<label for="">Request Date</label>
+						<label for="">@localizer["Request Date"]</label>
 						<p class="fs-6 fw-500">@Model.Loan.CreatedDate.ToString("g",CultureInfo.CurrentCulture)</p>
 					</div>
 				</div>
 			</div>
 
-			<p class="fw-600 fs-5">Bank Offer:</p>
+			<p class="fw-600 fs-5">@localizer["Bank Offer"]:</p>
 			<div class="my-3 d-flex justify-content-between">
 				<div class="d-flex flex-column">
 					<div>
-						<label for="">Bank Offer Amount</label>
+						<label for="">@localizer["Bank Offer Amount"]</label>
 						<p class="fs-6 fw-500">@Model.Loan.BankOfferAmount.ToString("C",CultureInfo.CurrentCulture)</p>
 					</div>
 					<div>
-						<label for="">Monthly payment amount</label>
+						<label for="">@localizer["Monthly payment amount"]</label>
 						<p class="fs-6 fw-500">@Model.Loan.MonthlyPayment.ToString("C",CultureInfo.CurrentCulture)</p>
 					</div>
 				</div>
 				<div class="d-flex flex-column">
 					<div>
-						<label for="">Collateral</label>
+						<label for="">@localizer["Collateral"]</label>
 						<p class="fs-6 fw-500">Land</p>
 					</div>
 					<div>
-						<label for="">Loan Term (month)</label>
+						<label for="">@localizer["Loan Term (month)"]</label>
 						<p class="fs-6 fw-500">@Model.Loan.Term months</p>
 					</div>
 				</div>
@@ -56,48 +57,48 @@
 		<form asp-controller="Loans" asp-area="BackOffice" method="post">
 			<input type="hidden" asp-for="Loan.Id" />
 			<div class="bg__secondary" style="padding: 2rem;">
-				<p class="fw-600 fs-5">Bank offer:</p>
+				<p class="fw-600 fs-5">@localizer["Bank offer"]:</p>
 				<div class="row">
 					<div class="d-flex flex-column col-6 fs-4">
-						<label for="first_name"> Amount </label>
+						<label for="first_name">@localizer["Amount"]</label>
 						<input asp-for="Loan.BankOfferAmount" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Loan.BankOfferAmount" class="text-danger"></span>
 
 					</div>
 					<div class="d-flex flex-column col-6 fs-4 ">
-						<label for="first_name"> Interest rate </label>
+						<label for="first_name">@localizer["Interest rate"]</label>
 						<input asp-for="Loan.InterestRate" class="text__input mt-1" placeholder="" value="10.00">
 						<span asp-validation-for="Loan.InterestRate" class="text-danger"></span>
 
 					</div>
 					<div class="d-flex flex-column col-6 fs-4 mt-4">
-						<label for="first_name"> Loan Term (month) </label>
+						<label for="first_name"> @localizer["Loan Term (month)"]</label>
 						<input asp-for="Loan.Term" class="text__input mt-1" placeholder="" value="12">
 						<span asp-validation-for="Loan.Term" class="text-danger"></span>
 
 					</div>
 					<div class="d-flex flex-column col-6 fs-4 mt-4">
-						<label for="first_name"> Payment total </label>
+						<label for="first_name">@localizer["Payment total"]</label>
 						<input asp-for="Loan.TotalAmount" class="text__input mt-1" placeholder="" readonly>
 					</div>
 					<div class="d-flex flex-column col-6 fs-4 mt-4">
-						<label for="first_name"> Monthly payment amount </label>
+						<label for="first_name">  @localizer["Monthly payment amount"]</label>
 						<input asp-for="Loan.MonthlyPayment" class="text__input mt-1" readonly>
 					</div>
 				</div>
 				<div class="mt-5 text-end">
 					<button type="submit" class="btn_outline fs-5 fw-600"
 							style="margin-right: 1rem;">
-						Cancel
+						@localizer["Cancel"]
 					</button>
 					<button asp-action="SendBankOffer" type="submit"
 							class="btn_solid fs-5 fw-600 bg_primary_hover text-white"
 							style="margin-right: 1rem;">
-						Send
+						@localizer["Send"]
 					</button>
 					<button asp-action="OpenLoan" type="submit"
 							class="btn_solid fs-5 fw-600 bg_primary_hover text-white">
-						Open
+						@localizer["Open"]
 					</button>
 				</div>
 			</div>

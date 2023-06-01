@@ -1,100 +1,197 @@
 ﻿@model ManageCustomersViewModel
+@using BankingApp.Areas.BackOffice;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@using BankingApp.Data;
+@inject ISharedViewLocalizer localizer
 
-<form asp-action="AddUpdateCustomer" asp-controller="Customers" asp-area="BackOffice" method="post">
+@{
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
+
+<div class="offset-1">
+	<a id="btnViewAccounts" data-cId="@Model.Customer.Id" class="btn btn-secondary mb-2" @@click="active_tab = 4">
+		<span>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
+				<path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z" />
+				<path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z" />
+				<path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z" />
+				<path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z" />
+			</svg>
+		</span>
+		@localizer["View Accounts"]
+	</a>
+</div>
+<form id="formUpdateCustomer" asp-action="AddUpdateCustomer" asp-controller="Customers" asp-area="BackOffice" method="post">
 	<div asp-validation-summary="All" class="text-danger"></div>
 	<input type="hidden" asp-for="Customer.Id" />
 	<input type="hidden" asp-for="Customer.UserName" />
 	<div class="col-lg-10 mx-auto py-4">
 		<div class="row">
 			<div class="col-lg-12">
+				<div class="row py-1">
+					<div class="d-flex flex-column mt-2 col-5 fs-4">
+						<label for="customer_name">@localizer["Customer ID"]</label>
+						<input asp-for="Customer.CustomerUniqueId" class="text__input mt-1" readonly style="background-color:lightgray">
+						<span asp-validation-for="Customer.CustomerUniqueId" class="text-danger"></span>
+					</div>
+				</div>
 				<div class="row py-4">
 					<div class="d-flex flex-column mt-2 col-5 fs-4">
-						<label for="customer_name">First Name</label>
+						<label for="customer_name">@localizer["First Name"]</label>
 						<input asp-for="Customer.FirstName" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.FirstName" class="text-danger"></span>
 
 					</div>
 					<div class="d-flex flex-column mt-2 col-5 offset-1 fs-4">
-						<label for="phone_number">Last Name</label>
+						<label for="phone_number">@localizer["Last Name"]</label>
 						<input asp-for="Customer.LastName" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.LastName" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 fs-4 mt-4">
-						<label for="email">Email</label>
-						<input asp-for="Customer.Email" class="text__input mt-1" placeholder="">
-						<span asp-validation-for="Customer.Email" class="text-danger"></span>
+						<label for="email">@localizer["Email"]</label>
+						<input asp-for="Email" class="text__input mt-1" placeholder="">
+						<span asp-validation-for="Email" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
-						<label for="email">Phone</label>
-						<input asp-for="Customer.PhoneNumber" class="text__input mt-1" placeholder="">
-						<span asp-validation-for="Customer.PhoneNumber" class="text-danger"></span>
+						<label for="email">@localizer["Phone"]</label>
+						<input asp-for="PhoneNumber" class="text__input mt-1" placeholder="">
+						<span asp-validation-for="PhoneNumber" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 fs-4 mt-4">
-						<label for="email">Address Line 1</label>
+						<label for="email">@localizer["Address Line 1"]</label>
 						<input asp-for="Customer.AddressLine1" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.AddressLine1" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
-						<label for="email">Address Line 2</label>
+						<label for="email">@localizer["Address Line 2"]</label>
 						<input asp-for="Customer.AddressLine2" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.AddressLine2" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 fs-4 mt-4">
-						<label for="email">City</label>
+						<label for="email">@localizer["City"]</label>
 						<input asp-for="Customer.City" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.City" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
-						<label for="email">Region</label>
+						<label for="email">@localizer["State/Province"]</label>
 						<input asp-for="Customer.Region" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.Region" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 fs-4 mt-4">
-						<label for="email">Zip Code</label>
+						<label for="email">@localizer["Zip Code"]</label>
 						<input asp-for="Customer.Zip" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.Zip" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
-						<label for="email">Country</label>
+						<label for="email">@localizer["Country"]</label>
 						<input asp-for="Customer.Country" class="text__input mt-1" placeholder="">
 						<span asp-validation-for="Customer.Country" class="text-danger"></span>
 					</div>
 					<div class="d-flex flex-column col-5 fs-4 mt-4">
-						<label for="account_balances">Account Balances</label>
-						<input asp-for="Customer.AccountBalance" class="text__input mt-1" placeholder="">
-						<span asp-validation-for="Customer.AccountBalance" class="text-danger"></span>
+						<label for="account_balances">@localizer["Account Balances"]</label>
+						<input value="@Model.Customer.Accounts?.Sum(a => a.Balance)" class="text__input mt-1" placeholder="" readonly style="background-color:lightgray">
 					</div>
 
 					<div class="d-flex flex-column col-5 offset-1 fs-4 mt-4">
-						<label for="first_name">Loan Balances</label>
-						<input asp-for="Customer.LoanBalance" class="text__input mt-1" placeholder="">
-						<span asp-validation-for="Customer.LoanBalance" class="text-danger"></span>
+						<label for="first_name">@localizer["Loan Balances"]</label>
+						<input value="@ViewBag.LoanTotal" class="text__input mt-1" placeholder="" readonly style="background-color:lightgray">
 					</div>
 
 					<div class="d-flex align-items-center col-5 fs-4 mt-4">
 						<input asp-for="Customer.IsActive" class="form-check-input m-0" type="checkbox">
 						<label class="form-check-label" style="margin-left: 1rem;" for="flexCheckDefault">
-							Active
+							@localizer["Active"]
 						</label>
 					</div>
 				</div>
 			</div>
 
-
-			<div class="mt-5 text-end">
-				<button type="button" class="btn_outline fs-5 fw-600"
+			@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Customers")).PermissionType == PermissionType.Update)
+			{
+				<div class="mt-5 text-end">
+					<button type="submit" class="btn_outline fs-5 fw-600"
 						style="margin-right: 1rem;">
-					Cancel
-				</button>
-				<button type="submit" class="btn_outline fs-5 fw-600"
-						style="margin-right: 1rem;">
-					Update
-				</button>
-				<button type="button"
-						class="btn_solid fs-5 fw-600 bg_primary_hover text-white" style="margin-right: 1rem;">
-					Delete
-				</button>
-			</div>
+						@localizer["Update"]
+					</button>
+				</div>
+			}
 		</div>
 	</div>
 </form>
+
+<script>
+
+	$("#btnViewAccounts").click(function () {
+		var aId = $(this).attr("data-cId");
+		LoadAccounts(aId);
+	})
+
+	function LoadAccounts(cId) {
+		$.ajax({
+			type: "GET",
+			async: true,
+			url: '/BackOffice/Customers/LoadAccounts',
+			data: { "customerId": cId },
+			success: function (data) {
+				$('#accounts').html(data);
+			},
+			error: function (error) {
+				alert('Error occured. Please try again later.');
+			}
+		});
+	}
+	$('#formUpdateCustomer').validate({
+		errorClass: "my-error-class",
+		rules: {
+			'Customer.FirstName': {
+				required: true
+			},
+			'Customer.LastName': {
+				required: true,
+			},
+			'Transaction.Reference': {
+				required: true
+			},
+			'Email': {
+				required: true,
+				email: true,
+				//remote: {
+				//	url: "Employers/IsEmailTaken",
+				//	type: "post",
+				//	data: {
+				//		email: function () {
+				//			return $("#Email").val();
+				//		}
+				//	}
+				//}
+			},
+			'PhoneNumber': {
+				required: true
+			},
+			'Customer.AddressLine1': {
+				required: true
+			},
+			'Customer.City': {
+				required: true
+			},
+			'Customer.Zip': {
+				required: true
+			},
+			'Customer.Country': {
+				required: true
+			},
+			'Customer.Region': {
+				required: true
+			}
+		},
+		messages: {
+			'Email': {
+				remote: "Email already exists"
+			}
+		}
+	});
+</script>

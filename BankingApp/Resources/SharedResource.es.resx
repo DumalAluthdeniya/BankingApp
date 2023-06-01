@@ -117,28 +117,421 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Account Balance" xml:space="preserve">
+    <value>Saldo</value>
+  </data>
+  <data name="Account Details" xml:space="preserve">
+    <value>Cuenta - Detalles </value>
+  </data>
+  <data name="Account No" xml:space="preserve">
+    <value>Cuenta #</value>
+  </data>
   <data name="Account type" xml:space="preserve">
-    <value>Account type</value>
+    <value>Tipo de cuenta</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>Cuentas</value>
+  </data>
+  <data name="Accounts of" xml:space="preserve">
+    <value>Cuentas de</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="Active Loan Accounts" xml:space="preserve">
+    <value>Prestamos Abiertos</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Agregar</value>
+  </data>
+  <data name="Add new Branch" xml:space="preserve">
+    <value>Nueva Sucursal</value>
+  </data>
+  <data name="Add new Customer" xml:space="preserve">
+    <value>Nuevo cliente</value>
+  </data>
+  <data name="Add new Employee" xml:space="preserve">
+    <value>Nuevo empleado</value>
+  </data>
+  <data name="Add Transaction" xml:space="preserve">
+    <value>Nueva transacción</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Dirección</value>
+  </data>
+  <data name="Address Line 1" xml:space="preserve">
+    <value>Dirección Línea 1</value>
+  </data>
+  <data name="Address Line 2" xml:space="preserve">
+    <value>Dirección Línea 2</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Todo</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Cantidad</value>
   </data>
   <data name="Analytics" xml:space="preserve">
-    <value>Analytics</value>
+    <value>Analítica</value>
+  </data>
+  <data name="Area" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Bank Offer" xml:space="preserve">
+    <value>Oferta Bancaria</value>
+  </data>
+  <data name="Base Interest rate" xml:space="preserve">
+    <value>Tasa de interés básica</value>
+  </data>
+  <data name="Branch Details" xml:space="preserve">
+    <value>Detalles de la sucursal</value>
+  </data>
+  <data name="Buying Rate" xml:space="preserve">
+    <value>Tasa de compra</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Capital" xml:space="preserve">
+    <value>Capital</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Cambiar</value>
+  </data>
+  <data name="Change History" xml:space="preserve">
+    <value>Historial</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>Ciudad</value>
+  </data>
+  <data name="Collateral" xml:space="preserve">
+    <value>Colateral</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Pais</value>
+  </data>
+  <data name="Create Account" xml:space="preserve">
+    <value>Crear una cuenta</value>
+  </data>
+  <data name="Created By" xml:space="preserve">
+    <value>Creado Por</value>
+  </data>
+  <data name="Created Date" xml:space="preserve">
+    <value>Fecha Creado</value>
+  </data>
+  <data name="Created Officer" xml:space="preserve">
+    <value>Oficial</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Credito</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Divisa</value>
+  </data>
+  <data name="Currency name" xml:space="preserve">
+    <value>Nombre de divisa</value>
+  </data>
+  <data name="Currency Symbol" xml:space="preserve">
+    <value>Símbolo de divisa</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="Customer Accounts" xml:space="preserve">
+    <value>Cuentas de clientes</value>
+  </data>
+  <data name="Customer Details" xml:space="preserve">
+    <value>Detalles del cliente</value>
+  </data>
+  <data name="Customer Name" xml:space="preserve">
+    <value>Nombre del cliente</value>
+  </data>
+  <data name="Customer Request" xml:space="preserve">
+    <value>Solicitud del cliente</value>
+  </data>
+  <data name="Customers" xml:space="preserve">
+    <value>Clientes</value>
   </data>
   <data name="Customers Number" xml:space="preserve">
-    <value>Nombre de clients</value>
+    <value>Cliente Numero</value>
   </data>
   <data name="CustomersNumber" xml:space="preserve">
-    <value>Customers Number</value>
+    <value>Número de clientes</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Panel General</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Fecha</value>
+  </data>
+  <data name="Date/Time" xml:space="preserve">
+    <value>Fecha/hora</value>
+  </data>
+  <data name="Debit" xml:space="preserve">
+    <value>Debito</value>
+  </data>
+  <data name="Deposit" xml:space="preserve">
+    <value>Deposito</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripción</value>
+  </data>
+  <data name="Description/Ref" xml:space="preserve">
+    <value>Descripción/Ref</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Desactivado</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Employee Details" xml:space="preserve">
+    <value>Empleado - Detalles</value>
+  </data>
+  <data name="Filter by status" xml:space="preserve">
+    <value>Filtro por estatus</value>
+  </data>
+  <data name="First Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Historial</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactivo</value>
   </data>
   <data name="Income" xml:space="preserve">
-    <value>Outcome</value>
+    <value>Ingreso</value>
+  </data>
+  <data name="Int Rate" xml:space="preserve">
+    <value>Tasa Interes</value>
+  </data>
+  <data name="Interest rate" xml:space="preserve">
+    <value>Tasa de interés</value>
+  </data>
+  <data name="Last Name" xml:space="preserve">
+    <value>Apellido</value>
+  </data>
+  <data name="Last Updated Date" xml:space="preserve">
+    <value>Ultima actualizacion</value>
+  </data>
+  <data name="Late payment fee" xml:space="preserve">
+    <value>Cargo por atraso</value>
+  </data>
+  <data name="List of Branches" xml:space="preserve">
+    <value>Lista de Sucursales</value>
+  </data>
+  <data name="List of Customers" xml:space="preserve">
+    <value>Lista de Clientes</value>
+  </data>
+  <data name="List of Employees" xml:space="preserve">
+    <value>Lista de Empleados</value>
+  </data>
+  <data name="Loan Accounts" xml:space="preserve">
+    <value>Préstamos</value>
+  </data>
+  <data name="Loan Balance" xml:space="preserve">
+    <value>Balance del préstamo</value>
+  </data>
+  <data name="Loan Details" xml:space="preserve">
+    <value>Detalles del préstamo</value>
+  </data>
+  <data name="Loan Requests" xml:space="preserve">
+    <value>Solicitudes de préstamo</value>
+  </data>
+  <data name="Loan Term (month)" xml:space="preserve">
+    <value>Plazo del préstamo (mes)</value>
+  </data>
+  <data name="Loans" xml:space="preserve">
+    <value>Préstamos</value>
+  </data>
+  <data name="Log Out" xml:space="preserve">
+    <value>Cerrar sesión</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Gestion</value>
+  </data>
+  <data name="Manage Branches" xml:space="preserve">
+    <value>Sucursales</value>
+  </data>
+  <data name="Manage Cards" xml:space="preserve">
+    <value>Tarjetas</value>
+  </data>
+  <data name="Manage Employees" xml:space="preserve">
+    <value>Empleados</value>
+  </data>
+  <data name="Manage Exchange" xml:space="preserve">
+    <value>Tasas de Cambio</value>
+  </data>
+  <data name="Manage Fees" xml:space="preserve">
+    <value>Tarifas</value>
+  </data>
+  <data name="Manage Loan" xml:space="preserve">
+    <value>Préstamos</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>Gerente</value>
+  </data>
+  <data name="Market Rate" xml:space="preserve">
+    <value>Tasa de mercado</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Mensaje</value>
+  </data>
+  <data name="Monthly payment" xml:space="preserve">
+    <value>Mensualidad</value>
+  </data>
+  <data name="Monthly payment amount" xml:space="preserve">
+    <value>Monto mensual</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="New Ticket" xml:space="preserve">
+    <value>Nuevo Ticket</value>
+  </data>
+  <data name="Open Loan" xml:space="preserve">
+    <value>Préstamos Abiertos</value>
+  </data>
+  <data name="Open New Loan" xml:space="preserve">
+    <value>Nuevo Prestamo</value>
+  </data>
+  <data name="Outcome" xml:space="preserve">
+    <value>Resultado</value>
+  </data>
+  <data name="Payment total" xml:space="preserve">
+    <value>Pago total</value>
+  </data>
+  <data name="Permission List" xml:space="preserve">
+    <value>Permisos</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Teléfono</value>
+  </data>
+  <data name="Phone Number" xml:space="preserve">
+    <value>Número de teléfono</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Perfil</value>
+  </data>
+  <data name="Profile Picture" xml:space="preserve">
+    <value>Foto de perfil</value>
+  </data>
+  <data name="Province" xml:space="preserve">
+    <value>Provincia</value>
+  </data>
+  <data name="Purpose of loan" xml:space="preserve">
+    <value>Propósito del préstamo</value>
+  </data>
+  <data name="Reference" xml:space="preserve">
+    <value>Referencia</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Región(Código postal)</value>
+  </data>
+  <data name="Request Date" xml:space="preserve">
+    <value>Fecha de solicitud</value>
+  </data>
+  <data name="Return To Accounts" xml:space="preserve">
+    <value>Volver a Cuentas</value>
   </data>
   <data name="Saving" xml:space="preserve">
-    <value>Spending</value>
+    <value>Ahorro</value>
+  </data>
+  <data name="Saving Accounts" xml:space="preserve">
+    <value>Cuentas de Ahorro</value>
+  </data>
+  <data name="Selling Rate" xml:space="preserve">
+    <value>Tasa de venta</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Spending" xml:space="preserve">
+    <value>Gasto</value>
+  </data>
+  <data name="Spending Accounts" xml:space="preserve">
+    <value>Cuentas de Gasto</value>
+  </data>
+  <data name="Spread" xml:space="preserve">
+    <value>Margen</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Asunto</value>
+  </data>
+  <data name="Support System" xml:space="preserve">
+    <value>Sistema de Soporte</value>
+  </data>
+  <data name="Terms range" xml:space="preserve">
+    <value>Rango de plazo</value>
+  </data>
+  <data name="Ticket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="Ticket Details" xml:space="preserve">
+    <value>Ticket - Detalles</value>
   </data>
   <data name="Total Deposits" xml:space="preserve">
-    <value>Total Deposits</value>
+    <value>Depósitos Totales</value>
   </data>
-  <data name="Total Loans" xml:space="preserve">
-    <value>Prêts totaux</value>
+  <data name="TotalLoans" xml:space="preserve">
+    <value>Préstamos Totales</value>
+  </data>
+  <data name="Transaction Type" xml:space="preserve">
+    <value>Tipo de Transacción</value>
+  </data>
+  <data name="Transactions for account no" xml:space="preserve">
+    <value>Transacciones para la cuenta no.</value>
+  </data>
+  <data name="Transfer To Local" xml:space="preserve">
+    <value>Pago Local</value>
+  </data>
+  <data name="TX fee credit" xml:space="preserve">
+    <value>Crédito de cargo por TX</value>
+  </data>
+  <data name="TX fee debit" xml:space="preserve">
+    <value>Débito de tarifa por TX</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Update Currency" xml:space="preserve">
+    <value>Actualizar Divisa</value>
+  </data>
+  <data name="Upload Files" xml:space="preserve">
+    <value>Subir Archivos</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Valor</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Vista</value>
+  </data>
+  <data name="View &amp; Update" xml:space="preserve">
+    <value>Ver &amp; Actualizar</value>
+  </data>
+  <data name="View Accounts" xml:space="preserve">
+    <value>Ver Cuentas</value>
+  </data>
+  <data name="Withdrawal" xml:space="preserve">
+    <value>Retiro</value>
+  </data>
+  <data name="Your base currency is" xml:space="preserve">
+    <value>Moneda base: </value>
   </data>
 </root>

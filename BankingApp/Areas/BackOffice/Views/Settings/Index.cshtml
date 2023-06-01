@@ -1,5 +1,261 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using BankingApp.Areas.BackOffice;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+@using BankingApp.Data;
+@inject ISharedViewLocalizer localizer
+@model IEnumerable<Setting>
 @{
+	ViewData["Title"] = "Manage Settings";
+	var currentUser = await UserManager.GetUserAsync(User);
+	new ManagePermissions(Context);
+	var permissions = await ManagePermissions.Get(currentUser);
+}
+<main class="col-lg-10 offset-lg-2">
+	<nav class="d-flex justify-content-between bg-white align-items-center p-4 border__bottom">
+		<div class="d-none d-lg-block">
+			<h4 class="fw-semibold" style="font-size: 22px;">@localizer["Settings"]</h4>
+		</div>
+		<div class="d-flex flex-row-reverse">
+			<a asp-action="Profile" asp-controller="Employers" asp-area="BackOffice">
+				<img src="~/assets/svg/user profile.svg" alt="" srcset="">
+			</a>
+			<div style="margin-right: 50px">
+				@await Html.PartialAsync("_CulturePartial")
+			</div>
+		</div>
+	</nav>
+
+	<div class="p-4">
+		<div class="container">
+			<div class="py-4">
+				<div class="row">
+					<div class="col-lg-5">
+						<div>
+							<p class="fw-700">Exchange:</p>
+							<table class="table table-borderless">
+								<tbody>
+									<tr class="align-middle">
+										<td>Base Currency</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_BaseCurrency")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_BaseCurrency")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_BaseCurrency")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_BaseCurrency")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_BaseCurrency")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+@*									<tr class="align-middle">
+										<td>Currency List</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_CurrencyList")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_CurrencyList")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_CurrencyList")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_CurrencyList")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_CurrencyList")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>*@
+									<tr class="align-middle">
+										<td>Api Layer Api Key</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_ApiLayerApiKey")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_ApiLayerApiKey")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_ApiLayerApiKey")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_ApiLayerApiKey")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Exchange_ApiLayerApiKey")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="mt-5">
+							<p class="fw-700">Email Settings:</p>
+							<table class="table table-borderless">
+								<tbody>
+									<tr class="align-middle">
+										<td>SMTP Server</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPServer")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPServer")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPServer")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPServer")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPServer")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+									<tr class="align-middle">
+										<td>SMTP User</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPUser")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPUser")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPUser")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPUser")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPUser")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+
+									<tr class="align-middle">
+										<td>SMTP Password</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPPassword")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPPassword")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPPassword")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPPassword")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Email_SMTPPassword")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="mt-5">
+							<p class="fw-700">Account Settings:</p>
+							<table class="table table-borderless">
+								<tbody>
+									<tr class="align-middle">
+										<td>Base Account No</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Account_BaseAccountNo")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Account_BaseAccountNo")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Account_BaseAccountNo")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Account_BaseAccountNo")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Account_BaseAccountNo")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="mt-5">
+							<p class="fw-700">Customer Settings:</p>
+							<table class="table table-borderless">
+								<tbody>
+									<tr class="align-middle">
+										<td>Base Customer ID</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Other_BaseCustomerId")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Other_BaseCustomerId")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Other_BaseCustomerId")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Other_BaseCustomerId")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Other_BaseCustomerId")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="mt-5">
+							<p class="fw-700">Other Settings:</p>
+							<table class="table table-borderless">
+								<tbody>
+									<tr class="align-middle">
+										<td>Application Url</td>
+										@if (permissions.FirstOrDefault(p => p.Permission.Name.Equals("Manage Fee")).PermissionType == PermissionType.Update)
+										{
+											<td>
+												<input id="@Model.FirstOrDefault(f => f.Key.Equals("Other_ApplicationUrl")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Other_ApplicationUrl")).Value" class="text__input m-0 w-100">
+											</td>
+											<td>
+												<button data-id="@Model.FirstOrDefault(f => f.Key.Equals("Other_ApplicationUrl")).Id" class="update btn btn-info btn-xs">@localizer["Update"]</button>
+											</td>
+										}
+										else
+										{
+											<td>
+												<input disabled id="@Model.FirstOrDefault(f => f.Key.Equals("Other_ApplicationUrl")).Id" value="@Model.FirstOrDefault(f => f.Key.Equals("Other_ApplicationUrl")).Value" class="text__input m-0 w-100">
+											</td>
+										}
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+@section Scripts{
+	<script>
+		$(".update").click(function () {
+			var id = $(this).attr("data-id");
+			var idText = '#' + id;
+			var value = $(idText).val();
+			$.ajax({
+				type: "POST",
+				async: true,
+				url: '/BackOffice/Settings/UpdateSettingValue',
+				data: { "id": id, "value": value },
+				success: function (data) {
+					toastr.info('Successfully updated');
+					//location.reload();
+				},
+				error: function (error) {
+					toastr.error('Error occured. Please try again later.');
+				}
+			});
+		});
+	</script>
 }

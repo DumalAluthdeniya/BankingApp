@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace BankingApp.Data.Migrations
 {
-    public partial class AddExhngeIdToExchnage : Migration
+	public partial class AddExhngeIdToExchnage : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

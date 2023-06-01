@@ -1,0 +1,275 @@
+﻿@model ManageLoansViewModel
+@inject ISharedViewLocalizer localizer
+
+<style>
+	.my-error-class {
+		color: red;
+	}
+</style>
+<div class="row">
+	<div class="col-6 p-0">
+		<form id="myform" asp-controller="Loans" asp-area="BackOffice" method="post">
+			<div class="bg__secondary" style="padding: 2rem;">
+				<div class="row">
+					@*<div class="d-flex flex-column col-4 fs-4">
+					<label for="first_name">@localizer["Account No"]</label>
+					<input asp-for="Loan.AccountNo" class="text__input mt-1" readonly style="background-color:lightgray" />
+					</div>*@
+					<input type="hidden" asp-for="Loan.Account.AccountNo" class="text__input mt-1" readonly style="background-color:lightgray" />
+
+					<div class="d-flex flex-column col-4 fs-4">
+						<label for="first_name">@localizer["Customer"]</label>
+						<input id="CustomerAutoComplete" class="text__input mt-1" placeholder="Search by customer name" />
+						<input asp-for="SelectedCustomer" type="hidden" />
+					</div>
+					<div class="d-flex flex-column col-4 fs-4">
+						<label for="first_name">@localizer["Loan Type"]</label>
+						<select asp-for="Loan.LoanType" asp-items="@Html.GetEnumSelectList<LoanType>()" class="form-select form-control"></select>
+					</div>
+					<div class="d-flex flex-column col-4 fs-4">
+						<label for="first_name">@localizer["Amount"]</label>
+						<input asp-for="Loan.BankOfferAmount" class="text__input mt-1" placeholder="">
+						<span asp-validation-for="Loan.BankOfferAmount" class="text-danger"></span>
+
+					</div>
+					<div class="d-flex flex-column col-4 fs-4  mt-4">
+						<label for="first_name">@localizer["Interest rate"]</label>
+						<input asp-for="Loan.InterestRate" class="text__input mt-1" placeholder="">
+						<span asp-validation-for="Loan.InterestRate" class="text-danger"></span>
+
+					</div>
+					<div class="d-flex flex-column col-4 fs-4  mt-4">
+						<label for="first_name">@localizer["Other Fees"]</label>
+						<input asp-for="Loan.Fees" class="text__input mt-1" placeholder="" value="0.00">
+						<span asp-validation-for="Loan.Fees" class="text-danger"></span>
+
+					</div>
+					<div class="d-flex flex-column col-4 fs-4  mt-4">
+						<label for="first_name">@localizer["Loan Term (months)"]</label>
+						<input asp-for="Loan.Term" class="text__input mt-1" placeholder="" value="12">
+						<span asp-validation-for="Loan.Term" class="text-danger"></span>
+
+					</div>
+					<div class="d-flex flex-column col-4 fs-4 mt-4">
+						<label for="first_name"> @localizer["Payment total"]</label>
+						<input asp-for="Loan.TotalAmount" class="text__input mt-1" placeholder="" readonly style="background-color:lightgray;">
+					</div>
+					<div class="d-flex flex-column col-4 fs-4 mt-4">
+						<label for="first_name"> @localizer["Monthly payment"]</label>
+						<input asp-for="Loan.MonthlyPayment" class="text__input mt-1" readonly style="background-color:lightgray;">
+					</div>
+				</div>
+				<div class="row">
+					<div class="d-flex flex-column col-6 fs-4 mt-4">
+						<label for="first_name"> @localizer["Collateral"] </label>
+						<input asp-for="Loan.Collateral" class="text__input mt-1" placeholder="">
+						<span asp-validation-for="Loan.Collateral" class="text-danger"></span>
+
+					</div>
+					<div class="d-flex flex-column col-6 fs-4 mt-4">
+						<label for="first_name">@localizer["Purpose"]</label>
+						<select asp-for="Loan.Purpose" class="form-select form-control">
+							<option value="Business Launching">Business Launching</option>
+							<option value="Home Constructions">Home Constructions</option>
+							<option value="Make a large purchase">Make a large purchase</option>
+						</select>
+					</div>
+				</div>
+				<div class="mt-5 text-end">
+					<button @@click="active_tab = 2" type="button" class="btn_outline fs-5 fw-600"
+							style="margin-right: 1rem;">
+						@localizer["Cancel"]
+					</button>
+					<button asp-action="OpenLoan" type="submit"
+							class="btn_solid fs-5 fw-600 bg_primary_hover text-white submitBtn">
+						@localizer["Open"]
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="col-6" id="divInstallmentPlan">
+	</div>
+</div>
+
+<script>
+
+	$("#Loan_BankOfferAmount").keyup(function () {
+		var type = $("#Loan_LoanType").val();
+		var fees = $("#Loan_Fees").val();
+		var amount = $(this).val();
+		var interest = $("#Loan_InterestRate").val();
+		var term = $("#Loan_Term").val();
+		Calculate(amount, interest, term, type, fees);
+
+	});
+
+	$("#Loan_InterestRate").keyup(function () {
+		var type = $("#Loan_LoanType").val();
+		var fees = $("#Loan_Fees").val();
+		var amount = $("#Loan_BankOfferAmount").val();
+		var interest = $(this).val();
+		var term = $("#Loan_Term").val();
+		Calculate(amount, interest, term, type, fees);
+	});
+
+	$("#Loan_Term").keyup(function () {
+		var type = $("#Loan_LoanType").val();
+		var fees = $("#Loan_Fees").val();
+		var amount = $("#Loan_BankOfferAmount").val();
+		var interest = $("#Loan_InterestRate").val();
+		var term = $(this).val();
+		Calculate(amount, interest, term, type, fees);
+	});
+
+	$("#Loan_Fees").keyup(function () {
+		var type = $("#Loan_LoanType").val();
+		var fees = $("#Loan_Fees").val();
+		var amount = $("#Loan_BankOfferAmount").val();
+		var interest = $("#Loan_InterestRate").val();
+		var term = $("#Loan_Term").val();
+		Calculate(amount, interest, term, type, fees);
+	});
+
+	$('#Loan_LoanType').on('change', function () {
+		var type = $("#Loan_LoanType").val();
+		var fees = $("#Loan_Fees").val();
+		var amount = $("#Loan_BankOfferAmount").val();
+		var interest = $("#Loan_InterestRate").val();
+		var term = $("#Loan_Term").val();
+		Calculate(amount, interest, term, type, fees);
+	});
+
+	function Calculate(amount, interest, term, type, fees) {
+		//term = term / 12;
+		var monthlyAmount;
+		//var apr;
+		//var A = (amount * (1 + (interest / 100) * term));
+		//var int = +(A - amount) + +fees
+		//apr = ((int / amount) / (term * 1)) * 100;
+		//console.log(apr);
+
+		// compute the monthly payment figure
+		var amountWithFees = +amount + +fees;
+		var mInterest = interest / 100 / 12;
+		var x = Math.pow(1 + mInterest, term);
+		var monthly = (amountWithFees * x * mInterest) / (x - 1);
+
+		if (type == 1) {
+
+			var totalAmount = (monthly * term);
+			monthlyAmount = monthly.toFixed(2);
+			$("#Loan_TotalAmount").val(totalAmount.toFixed(2));
+			$("#Loan_MonthlyPayment").val(monthlyAmount);
+		}
+		else {
+
+
+			var termInYears = term / 12;
+
+			var interestAmount = amount * (interest / 100) * termInYears;
+			var intAmountWithFees = +interestAmount + +fees;
+			var b = +intAmountWithFees / +amount;
+
+			var apr = (b / termInYears) * 100;
+
+			var xx = apr / 100 / 12;
+
+			var xxx = Math.pow((1 + xx), 12);
+
+			var apy = (xxx - 1) * 100;
+
+			var totalAmount = +amount + +(amount * (apy / 100));
+			monthlyAmount = totalAmount / term;
+
+			$("#Loan_TotalAmount").val(totalAmount.toFixed(2));
+			$("#Loan_MonthlyPayment").val(monthlyAmount.toFixed(2));
+		}
+
+		LoadLoanItemsPartial(amountWithFees, term, monthlyAmount, interest)
+
+	}
+
+	function LoadLoanItemsPartial(amount, term, monthlyAmount, interest) {
+		$.ajax({
+			type: "GET",
+			async: true,
+			url: '/BackOffice/Loans/LoadLoanItemsPartial',
+			data: { "amount": amount, "term": term, "monthlyAmount": monthlyAmount, "interest": interest },
+			success: function (data) {
+				$('#divInstallmentPlan').html(data);
+			},
+			error: function (error) {
+				toastr.error('Error occured. Please try again later.');
+			}
+		});
+	}
+
+
+	$('#myform').validate({
+		ignore: [],
+		errorClass: "my-error-class",
+		rules: {
+			'SelectedCustomer': {
+				required: true,
+			},
+			'Loan.BankOfferAmount': {
+				required: true,
+				min: 1
+			},
+			'Loan.InterestRate': {
+				required: true,
+				min: 0
+			},
+			'Loan.InterestRate': {
+				required: true,
+				min: 0
+			},
+			'Loan.Fees': {
+				required: true,
+				min: 0
+			},
+			'Loan.Term': {
+				required: true,
+				min: 1
+			},
+			'Loan.Collateral': {
+				required: true
+			}
+		},
+		messages: {
+			'SelectedCustomer': 'Invalid customer'
+		},
+		submitHandler: function (e) {
+			$(".submitBtn").attr("disabled", true);
+			return true;
+		}
+	});
+
+
+	$("#CustomerAutoComplete").keyup(function () {
+		$("#SelectedCustomer").val("");
+	});
+
+	$("#CustomerAutoComplete").autocomplete({
+		source: function (request, response) {
+			$.ajax({
+				url: "/BackOffice/Support/Customers",
+				type: "GET",
+				dataType: "json",
+				data: { term: request.term },
+				success: function (data) {
+					response($.map(data, function (item) {
+						return { label: item.label, value: item.label, id: item.id };
+					}));
+				}
+			});
+		},
+		//minLength: 2,
+		select: function (event, ui) {
+			$("#SelectedCustomer").val(ui.item.id);
+			$("#SelectedCustomer").valid();
+
+		}
+	});
+</script>
